@@ -68,12 +68,6 @@ For each task, follow these steps in order:
    git switch -c fix-parser origin/main
    ```
 
-   Push the new target branch to my fork:
-
-   ```bash
-   git push -u lhy11009 fix-parser
-   ```
-
    The target/contribution branch is an integration branch. Do not make the requested code changes directly on this branch.
 
    If the target branch already exists locally or on `lhy11009`, do not recreate, reset, overwrite, or force-push it. Stop and report its current state unless the task explicitly instructs you to continue work on that existing target branch.
@@ -104,43 +98,25 @@ For each task, follow these steps in order:
 
    Commit the completed and tested changes to the Codex working branch.
 
-9. **Push the Codex working branch.**
+9. **Create a change patch.**
 
-   Push only the Codex working branch to my fork:
+   Create a patch containing the changes introduced by the current commit.
 
-   ```bash
-   git push -u lhy11009 codex/fix-parser
-   ```
+   Use `git diff` to generate the patch and save it as `my.patch` in the repository root.
 
-   Never push this branch to `origin`.
+   If a previous `my.patch` exists, feel free to delete it.
 
-10. **Create a pull request within my fork.**
+   Verify that `my.patch` contains only the intended changes before proceeding.
 
-Create the pull request:
+10. **Stop for user review.**
 
-```text
-lhy11009:codex/fix-parser
-          ↓
-lhy11009:fix-parser
-```
+   Stop after `my.patch` has been created and checked.
 
-Do not create the pull request against `main`.
+   Do not push any branch to a remote repository.
 
-Do not create a pull request against the upstream `origin` repository.
+   Do not create a pull request.
 
-11. **Check the pull request.**
-
-Check the pull request's automated tests/status checks when available.
-
-Report whether they pass and describe any failures.
-
-12. **Stop for user review.**
-
-Stop after the pull request has been prepared and checked.
-
-Do not merge the pull request.
-
-I will review and merge the Codex pull request into the target/contribution branch myself. When the complete contribution is ready, I will create the final pull request from the target branch in my fork (for example, `lhy11009:fix-parser`) to the upstream repository's `main` branch.
+   I will review the patch and decide how to proceed with the changes. When the complete contribution is ready, I will handle any subsequent push and pull request to the upstream repository.
 
 # Verification workflow
 
