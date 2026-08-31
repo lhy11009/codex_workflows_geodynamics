@@ -56,3 +56,14 @@ codex \
 This latter command is useful when the Codex workflow is launched from one directory but Codex also needs to modify a separate Git repository, such as ASPECT or WorldBuilder.
 
 When starting Codex, check the terminal output for sandbox-related errors. If the sandbox fails to initialize, diagnose the sandbox configuration first (e.g. with chatgpt, could be resolved in 10 mins).
+
+# Launch codex
+
+In terminal, launch codex with a given folder.
+
+```bash
+codex \
+    -C <name-of-folder> \
+    --sandbox workspace-write \
+    --add-dir "$WORLD_BUILDER_SOURCE_DIR"
+```
