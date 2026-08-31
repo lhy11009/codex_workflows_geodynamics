@@ -68,7 +68,7 @@ Before working on a software repository:
 
 ## Local repository
 
-* Local repository should be <workspace-root>/Softwares/<name-of-repository>
+* Local repository should be <workspace-root>/Softwares/<name-of-repository> if not otherwise specified.
 
 ## Python environment
 

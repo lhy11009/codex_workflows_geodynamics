@@ -43,7 +43,9 @@ pytest
 ## Repository
 
 Local directory:
-<workspace-root>/Softwares/WorldBuilder
+First check if there is a WORLD_BUILDER_SOURCE_DIR global variable.
+If there is such a variable, use the value of that as the local directory.
+if not, use <workspace-root>/Softwares/WorldBuilder
 
 Upstream:
 https://github.com/GeodynamicWorldBuilder/WorldBuilder
