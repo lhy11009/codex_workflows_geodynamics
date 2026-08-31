@@ -1,1 +1,15 @@
+# TDD-PR generated local code copies
 Softwares
+
+# Literature Q&A generated indexes
+literature_qa/index/*
+!literature_qa/index/.gitkeep
+
+# Python generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Python virtual environments
+.venv/
+venv/
