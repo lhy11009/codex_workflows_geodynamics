@@ -43,6 +43,8 @@ For each task, follow these steps in order:
 
    If either remote is missing, points to an unexpected repository, or the remote configuration is otherwise ambiguous, stop and report the problem. Do not rename, replace, or modify an existing remote without explicit permission.
 
+   if you find untracked files and directories, including an existing my.patch in the repository, do not stop, proceed with the workflow and feel free to modify these when needed.
+
 2. **Fetch both remotes.**
 
    ```bash
@@ -60,13 +62,14 @@ For each task, follow these steps in order:
 
 4. **Create the target/contribution branch.**
 
-   The target/contribution branch must start from the current upstream `origin/main`.
-
+   If asked to create the target/contribution branch from a remote branch. Start by creating a local branch.
    For example:
 
    ```bash
    git switch -c fix-parser origin/main
    ```
+
+   If otherwise asked to use a local branch, verify that the local branch already exists.
 
    The target/contribution branch is an integration branch. Do not make the requested code changes directly on this branch.
 
@@ -74,15 +77,12 @@ For each task, follow these steps in order:
 
 5. **Create the Codex working branch.**
 
-   Create a separate working branch from the target/contribution branch. Use a descriptive `codex/` branch name.
+   Create a separate working branch from the target/contribution branch. Use a descriptive `codex/` branch name. If a working branch with the same name already exists, append a numerical suffix such as `_1`, `_2`, etc. to create a new branch.
 
    For example:
 
    ```bash
    git switch -c codex/fix-parser fix-parser
-   ```
-
-   All requested code modifications and commits must be made on this branch.
 
 6. **Make the requested changes.**
 

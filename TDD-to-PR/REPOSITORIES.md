@@ -172,3 +172,49 @@ None
 ## Tests
 
 None
+
+# ASPECT
+
+## Repository
+
+Local directory:
+/home/lochy/Softwares/aspect
+
+Upstream:
+https://github.com/geodynamics/aspect
+
+Fork:
+https://github.com/lhy11009/aspect
+
+## Repository type
+
+C++ project using CMake.
+
+## Git remotes
+
+origin:
+authoritative upstream, read-only
+
+lhy11009:
+personal fork, push allowed
+
+## Important directories
+
+- `source/` — implementation
+- `include/` — public/internal headers
+- `tests/` — tests
+- `cmake/` — CMake configuration
+- `doc/` — documentation
+
+## Explain the structures
+
+- `source/` - files in this folder are upper-level files (e.g. main workflow, utilities)
+- `source/<sub-folder>` - each subfolder is a plugin system (e.g. material model). They have their respective interface and instance of plugins.
+
+## Development environment
+
+None
+
+## Tests
+
+None
