@@ -97,7 +97,8 @@ For example:
 ```bash
 codex \
     --sandbox workspace-write \
-    --add-dir "$WORLD_BUILDER_SOURCE_DIR"
+    --add-dir "$WORLD_BUILDER_SOURCE_DIR" \
+    --add-dir "$ASPECT_SOURCE_DIR"
 ```
 
 This latter command is useful when the Codex workflow is launched from one directory but Codex also needs to modify a separate Git repository, such as ASPECT or WorldBuilder.

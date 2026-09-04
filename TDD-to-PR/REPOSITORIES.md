@@ -3,7 +3,7 @@
 ## Repository
 
 Local directory:
-<workspace-root>/Softwares/gdmate
+/home/lochy/ASPECT_PROJECT/gdmate
 
 Upstream:
 https://github.com/gdmate/gdmate
@@ -185,6 +185,9 @@ https://github.com/geodynamics/aspect
 
 Fork:
 https://github.com/lhy11009/aspect
+
+Local stable deal.ii repository:
+/home/lochy/Softwares/Deal.ii-9.7.0-Native-32bits-candi-gcc-12.4.0-openmpi-4.1.6
 
 ## Repository type
 
