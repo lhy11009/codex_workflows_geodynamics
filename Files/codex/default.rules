@@ -1,0 +1,39 @@
+# Local Git operations
+prefix_rule(pattern=["command", "-v", "git"], decision="allow")
+prefix_rule(pattern=["git", "status"], decision="allow")
+prefix_rule(pattern=["git", "diff"], decision="allow")
+prefix_rule(pattern=["git", "log"], decision="allow")
+prefix_rule(pattern=["git", "add"], decision="allow")
+prefix_rule(pattern=["git", "commit"], decision="allow")
+prefix_rule(pattern=["git", "switch"], decision="allow")
+prefix_rule(pattern=["git", "branch"], decision="allow")
+prefix_rule(pattern=["git", "--version"], decision="allow")
+prefix_rule(pattern=["git", "ls-remote"], decision="allow")
+prefix_rule(pattern=["git", "remote", "-v"], decision="allow")
+prefix_rule(pattern=["rm", "--", "my.patch"], decision="allow")
+
+# Remote Git operations
+prefix_rule(pattern=["git", "clone"], decision="allow")
+prefix_rule(pattern=["git", "fetch", "origin"], decision="allow")
+prefix_rule(pattern=["git", "fetch", "lhy11009"], decision="allow")
+
+# Local bash commands
+prefix_rule(pattern=["pwd"], decision="allow")
+
+# Ssh commands
+prefix_rule(pattern=["ssh", "hive"], decision="allow")
+
+# ASPECT specific
+prefix_rule(
+    pattern=["../build_main_debug/aspect"],
+    decision="allow",
+)
+
+# gdmate specific
+prefix_rule(pattern=["conda", "run", "-n", "py-gdmate", "python", "-m", "pip", "install"], decision="allow")
+prefix_rule(pattern=["conda", "run", "-n", "py-gdmate", "pytest"], decision="allow")
+prefix_rule(pattern=["conda", "run", "-n", "py-gdmate", "ruff", "check"], decision="allow")
+prefix_rule(pattern=["conda", "run", "-n", "py-gdmate", "python", "-m", "build"], decision="allow")
+prefix_rule(pattern=["conda", "run", "-n", "py-gdmate", "sphinx-build"], decision="allow")
+prefix_rule(pattern=["git", "diff", "--cached", "--check"], decision="allow")
+prefix_rule(pattern=["../build_main_debug/aspect"], decision="allow")
