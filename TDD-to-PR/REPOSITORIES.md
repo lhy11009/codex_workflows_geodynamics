@@ -38,54 +38,6 @@ Run the complete test suite with:
 pytest
 
 
-# WorldBuilder
-
-## Repository
-
-Local directory:
-First check if there is a WORLD_BUILDER_SOURCE_DIR global variable.
-If there is such a variable, use the value of that as the local directory.
-if not, use <workspace-root>/Softwares/WorldBuilder
-
-Upstream:
-https://github.com/GeodynamicWorldBuilder/WorldBuilder
-
-Fork:
-https://github.com/lhy11009/WorldBuilder
-
-## Repository type
-
-C++ project using CMake.
-
-## Git remotes
-
-origin:
-authoritative upstream, read-only
-
-lhy11009:
-personal fork, push allowed
-
-## Important directories
-
-- `source/` — implementation
-- `include/` — public/internal headers
-- `tests/` — tests
-- `cmake/` — CMake configuration
-- `doc/` — documentation
-
-## Explain the structures
-
-- `source/world_builder` - files in this folder are upper-level files (e.g. main workflow, utilities)
-- `source/world_builder/features` - each file in this folder is a feature (e.g. oceanic plate as oceanic_plate.cc) and each feature as their own models as seperate sub-folders (e.g. oceanic_plate_models)
-
-## Development environment
-
-None
-
-## Tests
-
-None
-
 
 # HaMaGeoLib
 
@@ -125,6 +77,7 @@ Run focused tests with pytest.
 Run the complete test suite with:
 
 pytest
+
 
 
 # WorldBuilder
@@ -173,6 +126,8 @@ None
 
 None
 
+
+
 # ASPECT
 
 ## Repository
@@ -218,6 +173,22 @@ personal fork, push allowed
 
 None
 
+## Indentation
+
+Code indentation can be applied using:
+
+```bash
+make indent
+```
+
 ## Tests
 
-None
+For every new test, there must be a reference-data directory with the same name under the test folder.
+
+At a minimum, the reference-data directory must contain a `screen-output` file.
+
+Tests are built using:
+
+```bash
+make setup_tests
+```
