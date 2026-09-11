@@ -29,16 +29,52 @@ REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 usage()
 {
     echo "Usage:"
-    echo "  $0 <literature-dir> <output-dir> <number-of-papers>"
+    echo "  $0 [-n|--newest-first] <literature-dir> <output-dir> <number-of-papers>"
+    echo
+    echo "Options:"
+    echo "  -n, --newest-first  Process newer PDFs before older PDFs."
+    echo "                      Falls back to modification time when creation time is unavailable."
+    echo "  -h, --help          Show this help message."
+    echo "  --                  Stop parsing options."
     echo
     echo "Example:"
-    echo "  $0 tests/fixtures/literature dtemp 3"
+    echo "  $0 tests/fixtures/literature dtemp 3 --newest-first"
 }
 
-if [[ $# -eq 1 && ( "$1" == "-h" || "$1" == "--help" ) ]]; then
-    usage
-    exit 0
-fi
+SORT_NEWEST_FIRST=false
+POSITIONAL_ARGUMENTS=()
+
+parse_arguments()
+{
+    while (( $# > 0 )); do
+        case "$1" in
+            -h|--help)
+                usage
+                exit 0
+                ;;
+            -n|--newest-first)
+                SORT_NEWEST_FIRST=true
+                ;;
+            --)
+                shift
+                POSITIONAL_ARGUMENTS+=("$@")
+                break
+                ;;
+            -*)
+                echo "Error: unknown option: $1" >&2
+                usage >&2
+                return 1
+                ;;
+            *)
+                POSITIONAL_ARGUMENTS+=("$1")
+                ;;
+        esac
+        shift
+    done
+}
+
+parse_arguments "$@"
+set -- "${POSITIONAL_ARGUMENTS[@]}"
 
 if [[ $# -ne 3 ]]; then
     usage
@@ -92,13 +128,35 @@ log "Starting summarize batch"
 log "Literature directory: ${LITERATURE_DIR}"
 log "Output directory: ${OUTPUT_DIR}"
 log "Batch size: ${BATCH_SIZE}"
-mapfile -d '' PDF_FILES < <(
-    find "${LITERATURE_DIR}" \
-        -type f \
-        -iname '*.pdf' \
-        -print0 |
-    sort -z
-)
+
+if [[ "${SORT_NEWEST_FIRST}" == true ]]; then
+    mapfile -d '' PDF_FILES < <(
+        while IFS= read -r -d '' pdf_file; do
+            creation_time="$(stat -c '%w' -- "${pdf_file}")"
+            if [[ "${creation_time}" == "-" ]]; then
+                creation_time="$(stat -c '%y' -- "${pdf_file}")"
+            fi
+            printf '%s\t%s\0' "${creation_time}" "${pdf_file}"
+        done < <(
+            find "${LITERATURE_DIR}" \
+                -type f \
+                -iname '*.pdf' \
+                -print0
+        ) |
+        sort -z -t $'\t' -k1,1r -k2,2 |
+        while IFS= read -r -d '' pdf_record; do
+            printf '%s\0' "${pdf_record#*$'\t'}"
+        done
+    )
+else
+    mapfile -d '' PDF_FILES < <(
+        find "${LITERATURE_DIR}" \
+            -type f \
+            -iname '*.pdf' \
+            -print0 |
+        sort -z
+    )
+fi
 
 log "PDF files discovered: ${#PDF_FILES[@]}"
 
