@@ -68,6 +68,10 @@ def test_batch_size_and_skip_existing(tmp_path):
 
     assert result.returncode == 0
 
+    selection_message = "PDF files selected for batch: 2"
+    assert selection_message in result.stdout
+    assert result.stdout.index(selection_message) < result.stdout.index("Starting Codex")
+
     calls = log_file.read_text(encoding="utf-8").splitlines()
 
     # Exactly two papers should be processed.
