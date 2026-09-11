@@ -222,6 +222,7 @@ EOF
     # --------------------------------------------------------
 
     codex exec \
+        -C "${REPO_DIR}" \
         --sandbox workspace-write \
         --add-dir "${LITERATURE_DIR}" \
         "${prompt}"

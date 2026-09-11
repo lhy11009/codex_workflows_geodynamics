@@ -1,0 +1,99 @@
+## Batch literature summarization
+
+The script:
+
+    bash_scripts/summarize_batch.sh
+
+uses Codex to summarize multiple PDF files using the workflow defined in:
+
+    templates/summarize-literature.md
+
+For each run, the script:
+
+1. Finds PDF files recursively under the literature directory.
+2. Skips PDFs that already have a corresponding Markdown summary in the output directory.
+3. Selects the requested number of unsummarized papers.
+4. Runs Codex once for each selected paper.
+5. Writes the generated Markdown summaries to the specified output directory.
+6. Records batch information in `summarize_batch.log` in the output directory.
+
+### Usage
+
+Run:
+
+    ./bash_scripts/summarize_batch.sh [options] <literature-dir> <output-dir> <number-of-papers>
+
+For example:
+
+    ./bash_scripts/summarize_batch.sh \
+        /home/lochy/Documents/papers \
+        /home/lochy/Documents/papers/markdown_summary \
+        10
+
+The literature and output directories may be absolute paths or paths relative to the `literature_qa` directory.
+
+Use:
+
+    -n
+    --newest-first
+
+to process newer PDFs first. If PDF creation time is unavailable, modification time is used instead.
+
+For example:
+
+    ./bash_scripts/summarize_batch.sh \
+        /home/lochy/Documents/papers \
+        /home/lochy/Documents/papers/markdown_summary \
+        10 \
+        -n
+
+Use:
+
+    ./bash_scripts/summarize_batch.sh --help
+
+to display the command-line options.
+
+### Scheduling with cron
+
+The batch script can be run periodically with `cron`. This is useful for processing a large literature collection gradually rather than consuming a large amount of Codex usage in one session.
+
+First verify that the command runs successfully from the terminal.
+
+Then edit the user crontab:
+
+    crontab -e
+
+For example, the following configuration runs a batch of 10 papers at 00:00, 05:00, 10:00, 15:00, and 20:00 each day:
+
+    SHELL=/bin/bash
+    PATH=/usr/local/bin:/usr/bin:/bin
+
+    0 */5 * * * /home/lochy/Desktop/codex_workflows_geodynamics/literature_qa/bash_scripts/summarize_batch.sh /home/lochy/Documents/papers /home/lochy/Documents/papers/markdown_summary 10 -n >> /home/lochy/Documents/papers/markdown_summary/cron.log 2>&1
+
+The script writes its own batch log to:
+
+    <output-dir>/summarize_batch.log
+
+The cron entry additionally redirects the complete stdout and stderr of the scheduled execution to:
+
+    <output-dir>/cron.log
+
+This is useful for diagnosing failures that occur before or outside the script's normal logging.
+
+Check the installed cron configuration with:
+
+    crontab -l
+
+Monitor cron output with:
+
+    tail -f /home/lochy/Documents/papers/markdown_summary/cron.log
+
+Note that `0 */5 * * *` means execution at hours divisible by five rather than a strictly continuous five-hour interval. In particular, the daily sequence is:
+
+    00:00
+    05:00
+    10:00
+    15:00
+    20:00
+
+followed by 00:00 the next day.
