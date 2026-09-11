@@ -26,12 +26,22 @@ REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 # Arguments
 # ============================================================
 
-if [[ $# -ne 3 ]]; then
+usage()
+{
     echo "Usage:"
     echo "  $0 <literature-dir> <output-dir> <number-of-papers>"
     echo
     echo "Example:"
     echo "  $0 tests/fixtures/literature dtemp 3"
+}
+
+if [[ $# -eq 1 && ( "$1" == "-h" || "$1" == "--help" ) ]]; then
+    usage
+    exit 0
+fi
+
+if [[ $# -ne 3 ]]; then
+    usage
     exit 1
 fi
 

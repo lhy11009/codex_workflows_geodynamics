@@ -4,6 +4,8 @@ import os
 import subprocess
 from pathlib import Path
 
+import pytest
+
 
 PROJECT_ROOT = Path(__file__).parents[1]
 SCRIPT = PROJECT_ROOT / "bash_scripts" / "summarize_batch.sh"
@@ -22,6 +24,22 @@ printf '\\n' >> "{log_file}"
     )
 
     codex_path.chmod(0o755)
+
+
+@pytest.mark.parametrize("help_option", ["-h", "--help"])
+def test_help_option(help_option):
+    """Show usage and exit successfully without requiring other arguments."""
+    result = subprocess.run(
+        [SCRIPT, help_option],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    assert "Usage:" in result.stdout
+    assert "<literature-dir> <output-dir> <number-of-papers>" in result.stdout
+    assert result.stderr == ""
 
 
 def test_batch_size_and_skip_existing(tmp_path):
