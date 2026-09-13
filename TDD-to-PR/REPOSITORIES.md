@@ -192,3 +192,30 @@ Tests are built using:
 ```bash
 make setup_tests
 ```
+
+# codex_workflows_geodynamics
+
+## Repository
+
+Local directory:
+/home/lochy/Desktop/codex_workflows_geodynamics
+
+Upstream:
+https://github.com/lhy11009/codex_workflows_geodynamics
+
+Fork:
+None; just use the upstream
+
+## Git remotes
+
+origin:
+authoritative upstream, as well as personal fork, push allowed
+
+## Development environment
+
+Conda environment:
+Sub-folders have different conda environment. Check their README files.
+
+## Tests
+
+Look into the tests defined in the sub-folders.
