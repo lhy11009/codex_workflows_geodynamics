@@ -49,6 +49,35 @@ For example:
 
 Use:
 
+    -z
+    --zotero-storage
+
+when the literature directory is a Zotero storage directory whose immediate
+subdirectories are item keys. Summaries remain directly under the output
+directory. Each generated summary starts with Zotero metadata such as:
+
+    ---
+    zotero_key: ABCD1234
+    doi: 10.1016/j.tecto.2020.xxxxx
+    pdf: my_old_filename.pdf
+    ---
+
+The item key is taken from the PDF's parent directory and the PDF filename is
+preserved in the metadata. Codex reads the DOI from the PDF; the `doi` value is
+left empty if it cannot be verified. Existing summaries with the same
+`zotero_key` are skipped.
+
+For example:
+
+    ./bash_scripts/summarize_batch.sh \
+        /home/lochy/Zotero/storage \
+        /home/lochy/Documents/papers/markdown_summary \
+        10 \
+        --zotero-storage \
+        --newest-first
+
+Use:
+
     ./bash_scripts/summarize_batch.sh --help
 
 to display the command-line options.

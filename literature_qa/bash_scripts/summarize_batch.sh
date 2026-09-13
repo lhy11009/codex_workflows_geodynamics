@@ -29,11 +29,13 @@ REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 usage()
 {
     echo "Usage:"
-    echo "  $0 [-n|--newest-first] <literature-dir> <output-dir> <number-of-papers>"
+    echo "  $0 [options] <literature-dir> <output-dir> <number-of-papers>"
     echo
     echo "Options:"
     echo "  -n, --newest-first  Process newer PDFs before older PDFs."
     echo "                      Falls back to modification time when creation time is unavailable."
+    echo "  -z, --zotero-storage"
+    echo "                      Read Zotero item keys from PDF parent directories and add metadata."
     echo "  -h, --help          Show this help message."
     echo "  --                  Stop parsing options."
     echo
@@ -42,6 +44,7 @@ usage()
 }
 
 SORT_NEWEST_FIRST=false
+ZOTERO_STORAGE=false
 POSITIONAL_ARGUMENTS=()
 
 parse_arguments()
@@ -54,6 +57,9 @@ parse_arguments()
                 ;;
             -n|--newest-first)
                 SORT_NEWEST_FIRST=true
+                ;;
+            -z|--zotero-storage)
+                ZOTERO_STORAGE=true
                 ;;
             --)
                 shift
@@ -170,9 +176,20 @@ for pdf_file in "${PDF_FILES[@]}"; do
     pdf_name="$(basename "${pdf_file}")"
     pdf_stem="${pdf_name%.*}"
 
-    if compgen -G "${OUTPUT_DIR}/${pdf_stem}*.md" > /dev/null; then
-        log "Skipping existing summary: ${pdf_name}"
-        continue
+    if [[ "${ZOTERO_STORAGE}" == true ]]; then
+        zotero_key="$(basename "$(dirname "${pdf_file}")")"
+
+        for summary_file in "${OUTPUT_DIR}"/*.md; do
+            if [[ -f "${summary_file}" ]] && grep -Fqx "zotero_key: ${zotero_key}" "${summary_file}"; then
+                log "Skipping existing Zotero item: ${pdf_name} (${zotero_key})"
+                continue 2
+            fi
+        done
+    else
+        if compgen -G "${OUTPUT_DIR}/${pdf_stem}*.md" > /dev/null; then
+            log "Skipping existing summary: ${pdf_name}"
+            continue
+        fi
     fi
 
     ELIGIBLE_PDF_FILES+=("${pdf_file}")
@@ -188,6 +205,28 @@ log "PDF files selected for batch: ${#BATCH_FILES[@]}"
 for batch_index in "${!BATCH_FILES[@]}"; do
     pdf_file="${BATCH_FILES[batch_index]}"
     pdf_name="$(basename "${pdf_file}")"
+    zotero_instructions=""
+
+    if [[ "${ZOTERO_STORAGE}" == true ]]; then
+        zotero_key="$(basename "$(dirname "${pdf_file}")")"
+        zotero_instructions=$(cat <<EOF
+
+Write the resulting Markdown summary directly under:
+
+${OUTPUT_DIR}
+
+Begin the generated Markdown file with exactly this YAML front matter:
+
+---
+zotero_key: ${zotero_key}
+doi: <DOI from the PDF>
+pdf: ${pdf_name}
+---
+
+Replace the DOI placeholder with the DOI stated in the PDF. If the DOI cannot be verified, use an empty value for doi. Do not invent a DOI.
+EOF
+)
+    fi
 
     log "============================================================"
     log "Loop entry: ${pdf_name}"
@@ -212,6 +251,8 @@ ${pdf_file}
 Write the resulting Markdown summary under:
 
 ${OUTPUT_DIR}
+
+${zotero_instructions}
 
 Follow the workflow exactly.
 EOF

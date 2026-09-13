@@ -40,6 +40,7 @@ def test_help_option(arguments):
     assert result.returncode == 0
     assert "Usage:" in result.stdout
     assert "<literature-dir> <output-dir> <number-of-papers>" in result.stdout
+    assert "-z, --zotero-storage" in result.stdout
     assert result.stderr == ""
 
 
@@ -54,6 +55,99 @@ def test_unknown_option_is_rejected():
 
     assert result.returncode != 0
     assert "Error: unknown option: --unknown" in result.stderr
+
+
+@pytest.mark.parametrize(
+    ("zotero_option", "option_position"),
+    [
+        ("--zotero-storage", 0),
+        ("--zotero-storage", 1),
+        ("-z", 2),
+        ("--zotero-storage", 3),
+    ],
+)
+def test_zotero_storage_adds_front_matter_instructions(
+    tmp_path, zotero_option, option_position
+):
+    """Pass Zotero metadata and the flat output directory to Codex."""
+    literature_dir = tmp_path / "storage"
+    output_dir = tmp_path / "output"
+    mock_bin_dir = tmp_path / "bin"
+    log_file = tmp_path / "codex.log"
+    zotero_item_dir = literature_dir / "ABCD1234"
+
+    zotero_item_dir.mkdir(parents=True)
+    output_dir.mkdir()
+    mock_bin_dir.mkdir()
+    (zotero_item_dir / "my_old_filename.pdf").touch()
+
+    create_mock_codex(mock_bin_dir, log_file)
+    env = os.environ.copy()
+    env["PATH"] = f"{mock_bin_dir}:{env['PATH']}"
+
+    arguments = [str(literature_dir), str(output_dir), "1"]
+    arguments.insert(option_position, zotero_option)
+
+    result = subprocess.run(
+        [SCRIPT, *arguments],
+        cwd=PROJECT_ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    call = log_file.read_text(encoding="utf-8")
+    assert f"Write the resulting Markdown summary directly under:  {output_dir}" in call
+    assert "zotero_key: ABCD1234" in call
+    assert "doi: <DOI from the PDF>" in call
+    assert "pdf: my_old_filename.pdf" in call
+    assert "If the DOI cannot be verified, use an empty value" in call
+    assert not (output_dir / "ABCD1234").exists()
+
+
+def test_zotero_storage_skips_existing_zotero_key(tmp_path):
+    """Skip an item whose Zotero key is already present in a flat summary folder."""
+    literature_dir = tmp_path / "storage"
+    output_dir = tmp_path / "output"
+    mock_bin_dir = tmp_path / "bin"
+    log_file = tmp_path / "codex.log"
+
+    (literature_dir / "ABCD1234").mkdir(parents=True)
+    (literature_dir / "WXYZ5678").mkdir()
+    output_dir.mkdir()
+    mock_bin_dir.mkdir()
+    (literature_dir / "ABCD1234" / "same_name.pdf").touch()
+    (literature_dir / "WXYZ5678" / "same_name.pdf").touch()
+    (output_dir / "existing_summary.md").write_text(
+        "---\nzotero_key: ABCD1234\ndoi: \npdf: same_name.pdf\n---\n",
+        encoding="utf-8",
+    )
+
+    create_mock_codex(mock_bin_dir, log_file)
+    env = os.environ.copy()
+    env["PATH"] = f"{mock_bin_dir}:{env['PATH']}"
+
+    result = subprocess.run(
+        [
+            SCRIPT,
+            "--zotero-storage",
+            str(literature_dir),
+            str(output_dir),
+            "2",
+        ],
+        cwd=PROJECT_ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    calls = log_file.read_text(encoding="utf-8").splitlines()
+    assert len(calls) == 1
+    assert "WXYZ5678" in calls[0]
+    assert "ABCD1234" not in calls[0]
+    assert "Skipping existing Zotero item: same_name.pdf (ABCD1234)" in result.stdout
 
 
 @pytest.mark.parametrize(
