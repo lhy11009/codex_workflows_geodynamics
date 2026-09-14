@@ -44,7 +44,7 @@ pytest
 ## Repository
 
 Local directory:
-<workspace-root>/Softwares/HaMaGeoLib
+/home/lochy/ASPECT_PROJECT/HaMaGeoLib
 
 Upstream:
 https://github.com/lhy11009/HaMaGeoLib

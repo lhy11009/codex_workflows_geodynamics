@@ -62,9 +62,19 @@ For example:
 
     These categories are not mutually exclusive. Apply all that are relevant to each takeaway, and, when possible, connect the background knowledge in the introduction, results and figures from the current study, and discussion arguments to show how they collectively support the takeaway.
 
-2. Summarize the figure contents. For each figure, provide one sentence describing its main content.
+3. Summarize the methods used in the current study.
 
-3. Provide a forward summary.
+   - Identify the main methods, models, experiments, observations, datasets, or analytical approaches used in the paper.
+
+   - For each method, use 1--4 sentences to briefly summarize the important model or experimental setup, assumptions, parameters, initial or boundary conditions, and analysis procedures.
+
+   - Then, for each method, use 1--2 sentences to briefly explain its purpose and how it is used to obtain the results that support the key takeaways.
+
+   - Focus on methodological information that is relevant to the key takeaways rather than reproducing every technical detail provided in the paper.
+
+4. Summarize the figure contents. For each figure, provide one sentence describing its main content.
+
+5. Provide a forward summary.
 
    Organize the summary in the following order:
 
@@ -109,6 +119,22 @@ Below is the specified structure:
 - **Background:** <...>
 - **Result:** <...>
 - **Discussion:** <...>
+
+## Methods
+
+### Method 1
+
+**Method:** <name or brief description of the method>
+
+- **Setup:** <1--4 sentences summarizing the important model or experimental setup, assumptions, parameters, initial or boundary conditions, and analysis procedures>
+- **Purpose:** <1--2 sentences explaining the purpose of the method and how it is used to obtain the results that support the key takeaways>
+
+### Method 2
+
+**Method:** <...>
+
+- **Setup:** <...>
+- **Purpose:** <...>
 
 ## Figure summaries
 
