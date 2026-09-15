@@ -129,3 +129,7 @@ If GitHub CI fails:
 4. Fix the underlying issue.
 5. Do not disable or weaken tests simply to make CI pass.
 6. Push the fix and verify CI again.
+
+
+# Conversation routine
+

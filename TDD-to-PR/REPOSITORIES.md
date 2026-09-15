@@ -55,10 +55,7 @@ same as upstream
 ## Git remotes
 
 origin:
-authoritative upstream, read-only
-
-lhy11009:
-personal fork, push allowed
+authoritative upstream, push allowed
 
 ## Development environment
 
