@@ -16,10 +16,10 @@ set -euo pipefail
 # ============================================================
 
 # Directory containing this script:
-# <literature_qa>/scripts
+# <literature-qa>/scripts
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Root directory of the literature_qa repository.
+# Root directory of the literature-qa repository.
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # ============================================================
@@ -40,7 +40,7 @@ usage()
     echo "  --                  Stop parsing options."
     echo
     echo "Example:"
-    echo "  $0 tests/fixtures/literature dtemp 3 --newest-first"
+    echo "  $0 tests/fixtures/literature .dtemp 3 --newest-first"
 }
 
 SORT_NEWEST_FIRST=false
@@ -238,7 +238,7 @@ EOF
 
     prompt=$(cat <<EOF
 
-Switch to the literature_qa folder.
+Switch to the literature-qa folder.
 
 Follow the workflow defined in:
 

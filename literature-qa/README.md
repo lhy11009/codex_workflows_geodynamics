@@ -30,7 +30,7 @@ For example:
         /home/lochy/Documents/papers/markdown_summary \
         10
 
-The literature and output directories may be absolute paths or paths relative to the `literature_qa` directory.
+The literature and output directories may be absolute paths or paths relative to the `literature-qa` directory.
 
 Use:
 
@@ -97,7 +97,7 @@ For example, the following configuration runs a batch of 10 papers at 00:00, 05:
     SHELL=/bin/bash
     PATH=/usr/local/bin:/usr/bin:/bin
 
-    0 */5 * * * /home/lochy/Desktop/codex_workflows_geodynamics/literature_qa/bash_scripts/summarize_batch.sh /home/lochy/Documents/papers /home/lochy/Documents/papers/markdown_summary 10 -n >> /home/lochy/Documents/papers/markdown_summary/cron.log 2>&1
+    0 */5 * * * /home/lochy/Desktop/codex_workflows_geodynamics/literature-qa/bash_scripts/summarize_batch.sh /home/lochy/Documents/papers /home/lochy/Documents/papers/markdown_summary 10 -n >> /home/lochy/Documents/papers/markdown_summary/cron.log 2>&1
 
 The script writes its own batch log to:
 

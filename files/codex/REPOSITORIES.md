@@ -82,7 +82,7 @@ pytest
 ## Repository
 
 Local directory:
-<workspace-root>/Softwares/WorldBuilder
+<workspace-root>/.softwares/WorldBuilder
 
 Upstream:
 https://github.com/GeodynamicWorldBuilder/WorldBuilder

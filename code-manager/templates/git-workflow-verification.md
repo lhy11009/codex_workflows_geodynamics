@@ -8,7 +8,7 @@ For each step:
 New test branches:
 	Name the two new branch tdd_to_pr_workflow_verification and codex/tdd_to_pr_workflow_verification;
 Test feature to implement:
-	Add a codex_message.txt directory below the repository root with this contents: "This verifies the TDD-to-PR workflow"
+	Add a codex_message.txt directory below the repository root with this contents: "This verifies the code-manager workflow"
 If any step fails, produces an unexpected result, or conflicts with the repository state:
 	• Stop immediately.
 	• Do not attempt subsequent steps.

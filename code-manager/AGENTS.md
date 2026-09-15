@@ -1,18 +1,18 @@
 # Workspace Structure
 
-This repository contains the reusable TDD-to-PR workflow.
+This repository contains the reusable code-manager workflow.
 
 The workspace is expected to have the following structure:
 
 <workspace-root>/
-├── TDD-to-PR/
+├── code-manager/
 │   ├── AGENTS.md
 │   ├── README.md
 │   ├── skills/
 │   ├── scripts/
 │   └── notes/
 │
-└── Softwares/
+└── .softwares/
     ├── <repository-1>/
     ├── <repository-2>/
     └── ...
@@ -20,9 +20,9 @@ The workspace is expected to have the following structure:
 ## Path conventions
 
 - Do not assume an absolute path such as `D:\Codex`.
-- Check that the `<workspace-root>` folder contains the `TDD-to-PR`, otherwise warn me that there might be a problem
+- Check that the `<workspace-root>` folder contains the `code-manager`, otherwise warn me that there might be a problem
 - Software repositories are located under:
-  `<workspace-root>/Softwares/`
+  `<workspace-root>/.softwares/`
 
 # Development workflow
 
@@ -54,7 +54,7 @@ Before working on a software repository:
    * If no repository is specified, or if the repository cannot be identified unambiguously, stop and ask the user to specify the repository.
    * Do not infer the target repository from the current working directory, previous tasks, or other contextual clues.
 
-2. Read `REPOSITORIES.md`.
+2. Read `<workspace-root>/.local/REPOSITORIES.md`.
 
 3. Locate the section corresponding to the requested repository.
 
@@ -68,7 +68,7 @@ Before working on a software repository:
 
 ## Local repository
 
-* Local repository should be <workspace-root>/Softwares/<name-of-repository> if not otherwise specified.
+* Local repository should be <workspace-root>/.softwares/<name-of-repository> if not otherwise specified.
 
 ## Python environment
 

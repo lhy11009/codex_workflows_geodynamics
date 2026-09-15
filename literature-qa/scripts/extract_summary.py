@@ -19,7 +19,7 @@ Usage:
 Example:
     python scripts/extract_summary.py \
         --input tests/fixtures/markdown_summary/example.md \
-        --output dtemp/takeaways.md
+        --output .dtemp/takeaways.md
 """
 
 import re

@@ -40,7 +40,7 @@ not provided rather than filling the gap using outside knowledge.
 
 ## Output
 
-Summary into a `<filename>.md` file under the foler `literature_qa/dtemp` 
+Summary into a `<filename>.md` file under the foler `literature-qa/.dtemp` 
 
 If a file with the same name already exists, do not overwrite it. Append a numerical suffix `_1`, `_2`, etc. to create a new filename.
 

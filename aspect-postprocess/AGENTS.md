@@ -1,4 +1,4 @@
-# ASPECT Post-processing Agent
+# ASPECT Processing Agent
 
 ## Purpose
 
@@ -33,9 +33,9 @@ The workspace contains:
 
 ```text
 <workspace-root>/
-├── TDD-to-PR/
+├── .local/
 │   └── REPOSITORIES.md
-└── Softwares/
+└── .softwares/
     └── ...
 ```
 
@@ -44,7 +44,7 @@ When a task requires access to ASPECT, gdmate, or HaMaGeoLib:
 1. Locate:
 
    ```text
-   <workspace-root>/TDD-to-PR/REPOSITORIES.md
+   <workspace-root>/.local/REPOSITORIES.md
    ```
 
 2. Read `REPOSITORIES.md`.
@@ -55,7 +55,7 @@ When a task requires access to ASPECT, gdmate, or HaMaGeoLib:
    * gdmate
    * HaMaGeoLib
 
-4. Use the repository locations specified in `REPOSITORIES.md`, if `TDD-to-PR/REPOSITORIES.md` cannot be found, report the issue before doing anything.
+4. Use the repository locations specified in `REPOSITORIES.md`, if this file cannot be found, report the issue before doing anything.
 
 Do not guess repository locations.
 
@@ -76,14 +76,16 @@ Switching to Implementation mode does **not** grant permission to modify a repos
 The agent may:
 
 * inspect any files in the ASPECT repository
-* run aspect
+* create case parameter files
 
 The agent must NEVER:
 
 * modify any files in the ASPECT repository,
 * build ASPECT
+* run aspect
 
 If a post-processing task reveals that ASPECT itself should be changed, explain the proposed change to the user but do not apply it.
+If an analysis tasks requries running ASPECT, explain the case to run and let the user run it.
 
 ---
 
@@ -118,7 +120,7 @@ The agent may:
 * run scripts in the repository
 * import python utilities defined in the repository
 
-Modifications are permitted only when allowed by the current operating mode. And must follow the workflow defined in the <workspace-root>/TDD-to-PR/templates/new-pr-workflow.md. If this markdown file is missing, report a problem before doing any modification to the repository.
+Modifications are permitted only when allowed by the current operating mode. And must follow the workflow defined in the <workspace-root>/code-manager/templates/new-pr-workflow.md. If this markdown file is missing, report a problem before doing any modification to the repository.
 
 If not specifically mentioned, start with the local main branch when modify the code.
 
