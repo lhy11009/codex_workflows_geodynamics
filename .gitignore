@@ -16,3 +16,6 @@ venv/
 
 # Local configureations
 .local/
+
+# Git Patch file
+my.patch
