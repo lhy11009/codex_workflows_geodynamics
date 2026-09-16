@@ -1,4 +1,4 @@
-# ASPECT Post-processing Agent
+# ASPECT Processing Agent
 
 ## Purpose
 
@@ -25,7 +25,7 @@ The default operating mode is **Discussion mode**.
 
 ---
 
-# 1. Repository discovery
+# Repository discovery
 
 Repository locations must not be hard-coded.
 
@@ -59,9 +59,7 @@ When a task requires access to ASPECT, gdmate, or HaMaGeoLib:
 
 Do not guess repository locations.
 
----
-
-# 2. Repository permissions
+## Repository permissions
 
 Repository permissions are global rules.
 
@@ -105,6 +103,12 @@ The agent must NEVER:
 
 If a task appears to require changing gdmate, explain what should be changed but leave the repository untouched.
 
+The branch should be the developed branch:
+
+`haoyuan_main`
+
+The HaHaGeoLib package depends on this exact branch of gdmate
+
 ---
 
 ## HaMaGeoLib
@@ -120,13 +124,137 @@ The agent may:
 * run scripts in the repository
 * import python utilities defined in the repository
 
-Modifications are permitted only when allowed by the current operating mode. And must follow the workflow defined in the <workspace-root>/code-manager/templates/new-pr-workflow.md. If this markdown file is missing, report a problem before doing any modification to the repository.
+Modifications are permitted and must follow the workflow defined in the <workspace-root>/code-manager/templates/new-pr-workflow.md. If this markdown file is missing, report a problem before doing any modification to the repository.
+Modifications must always use the local main branch.
 
 If not specifically mentioned, start with the local main branch when modify the code.
 
+# Project discovery
+
+Project directory refers to a location on local or remote systems that keeps copies of simulation cases.
+
+Project locations and project-specific configurations must not be hard-coded.
+
+When a task requires access to a modeling project, first locate:
+
+```text
+<workspace-root>/.local/PROJECTS.md
+```
+
+Read `PROJECTS.md` and identify the project requested by the user.
+
+For example, a project entry may define different configurations for:
+
+* Local
+* Stampede3 (remote)
+* other machines or remote systems
+
+A project configuration may include:
+
+* project directory,
+* ASPECT branch,
+* ASPECT build,
+* HaMaGeoLib main notebook or processing scripts,
+* HaMaGeoLib tests,
+* machine or remote system,
+* other project-specific paths or settings.
+
+When the user refers to a project by name:
+
+1. Locate `<workspace-root>/.local/PROJECTS.md`.
+2. Find the corresponding project entry.
+3. Determine which machine/configuration applies to the current task.
+4. Retrieve the project directory and any other configuration required for the task.
+5. Use the paths exactly as defined in `PROJECTS.md`.
+
+Do not guess project locations or project-specific ASPECT branches, builds, notebooks, scripts, or tests.
+
+If `PROJECTS.md` cannot be found, report the issue before performing any project-specific operation.
+
+If the requested project is not defined in `PROJECTS.md`, report that the project is not configured and ask the user to add or provide the project configuration.
+
+If the requested machine or remote configuration is not defined for that project, report the missing configuration rather than assuming a path.
+
+## Project processing workflow
+
+If `PROJECTS.md` defines a main notebook, main processing script, or other processing entry point for a project, use these files as the primary reference for understanding that project's post-processing workflow.
+
+Paths identified as HaMaGeoLib notebooks, scripts, or tests are relative to the HaMaGeoLib repository unless `PROJECTS.md` explicitly states otherwise.
+
+Before designing, implementing, or running project-specific post-processing:
+
+1. Read the project's configuration from `PROJECTS.md`.
+2. Identify any configured main notebook, processing scripts, and tests.
+3. Locate these files relative to the HaMaGeoLib repository defined in `REPOSITORIES.md`.
+4. Inspect the main notebook or processing scripts to understand the existing processing workflow.
+5. Follow the existing workflow, conventions, data structures, function calls, file organization, and processing sequence when applicable.
+6. Inspect the configured tests when implementation details or expected behavior need to be understood.
+7. Prefer using or extending the existing project workflow rather than creating a separate or duplicate processing workflow.
+
+The main notebook or processing scripts define the starting point for understanding how the project is currently processed. They do not override the global repository permissions or operating-mode rules.
+
+Do not assume that a generic HaMaGeoLib or gdmate workflow applies to a project without first checking the project's configured main notebook or processing scripts.
+
+If a configured notebook, script, or test path does not exist, report the issue rather than silently substituting another file.
+
+## Project directory permissions
+
+A project directory is distinct from the ASPECT, gdmate, and HaMaGeoLib software repositories.
+
+The agent may inspect files in a configured project directory as required for processing and analysis.
+
+The agent is also allowed to create new files in a configured project directory.
+
+Original ASPECT simulation outputs are READ ONLY unless the user explicitly states otherwise.
+
+The agent must not overwrite, modify, move, rename, or delete existing simulation outputs.
+
+## Project-specific ASPECT branches and builds
+
+If a project configuration defines an ASPECT branch or build, use that branch and build when determining which ASPECT source code, version, or executable is associated with the project.
+
+### Inspecting ASPECT source code
+
+If a task requires inspecting or inquiring about ASPECT source code for a specific project:
+
+1. Read the project's configuration from `PROJECTS.md`.
+2. Identify the ASPECT branch associated with the project.
+3. Go to the ASPECT repository defined in `REPOSITORIES.md`.
+4. Check the current Git status before changing branches.
+5. Check out the project-specific ASPECT branch before inspecting the source code.
+6. Verify that the expected branch is checked out.
+7. Perform the requested source-code inspection on that branch.
+
+Do not inspect another branch and assume that its implementation applies to the project.
+
+If the project-specific ASPECT branch is not defined, report the issue rather than guessing which branch should be used.
+
+If switching branches could overwrite, remove, or otherwise interfere with uncommitted changes in the ASPECT repository, stop and report the issue. Do not stash, discard, commit, or modify those changes.
+
+Checking out an existing project-specific branch for read-only inspection is permitted. This does not grant permission to modify files in the ASPECT repository.
+
+### ASPECT builds
+
+If a project configuration defines an ASPECT build, use that build when determining which ASPECT version or executable is associated with the project.
+
+The presence of an ASPECT build in `PROJECTS.md` does not grant permission to build or run ASPECT.
+
+The global ASPECT permissions still apply.
+
+If a task requires running ASPECT:
+
+1. Prepare the case and parameter files as needed.
+2. Verify the case configuration as far as possible without running ASPECT.
+3. Identify the appropriate ASPECT branch and build from `PROJECTS.md`.
+4. Verify that the case is intended for that branch/build.
+5. Provide the exact command required to run the case.
+6. Stop and let the user run ASPECT.
+7. Continue processing or analysis after the user reports that the run has completed.
+
 ---
 
-# 3. ASPECT simulation outputs
+
+# ASPECT simulation outputs
 
 Original ASPECT simulation outputs are **READ ONLY**.
 
@@ -147,85 +275,7 @@ particles/
 *.visit
 ```
 
----
-
-# 4. Operating modes
-
-The agent has three operating modes:
-
-```text
-/discuss
-/implement
-/analyze
-```
-
-The current mode controls what actions may be taken.
-
-Repository permissions and simulation-output protections always take precedence over mode permissions.
-
----
-
-## /default — Discussion and Analysis mode
-
-**This is the default mode.**
-
-Every new Codex session begins in Discussion mode unless the user explicitly requests another mode.
-
-Discussion mode is intended for:
-
-* discussing scientific questions, algorithms,
-* run post-processing scripts, performing calculations, generating figure and animations
-* planning post-processing implementation,
-* examining existing implementations,
-
-The agent may:
-* read ASPECT output,
-* execute post-processing scripts,
-
-The agent must NOT:
-
-* modify repository source files or case files,
-* run ASPECT cases
-
-If the user asks a question such as:
-
-```text
-How should we calculate slab dip?
-```
-
-the agent should discuss the problem and inspect relevant code/data if useful.
-
-It must not begin implementing the solution unless the user switches to Implementation mode or explicitly instructs it to implement the discussed change.
-
----
-
-## /implement — Implementation mode
-
-The user may enter this mode with:
-
-```text
-/implement
-```
-
-or an equivalent explicit instruction such as:
-
-```text
-Switch to implementation mode.
-```
-
-Implementation mode allows development work.
-
-The agent may:
-
-* modify post-processing source code,
-
-### Repository restrictions remain active
-
-Even in Implementation mode:
-
-The repository permissions mentioned in the previous section applies.
-
-# 5. Large ASPECT outputs
+## Large ASPECT outputs
 
 ASPECT output can be very large.
 
@@ -236,7 +286,7 @@ Before processing large `vtu/pvtu` time series:
 * warn the user if the file for one time step is too large before proceeding (i.e. > 100 MB).
 
 
-# 6. Destructive operations
+# Destructive operations
 
 Never perform destructive operations on simulation outputs or read-only repositories.
 
@@ -254,7 +304,7 @@ If cleanup is necessary, explain what should be removed and obtain explicit inst
 
 ---
 
-# 7. General working principle
+# General working principle
 
 The preferred workflow is:
 
