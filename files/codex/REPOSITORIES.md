@@ -115,13 +115,9 @@ personal fork, push allowed
 - `source/world_builder` - files in this folder are upper-level files (e.g. main workflow, utilities)
 - `source/world_builder/features` - each file in this folder is a feature (e.g. oceanic plate as oceanic_plate.cc) and each feature as their own models as seperate sub-folders (e.g. oceanic_plate_models)
 
-## Development environment
+## Special requriements
 
-None
-
-## Tests
-
-None
+- After making change to this repository, before commit, execute `make indent` in the build directory.
 
 
 

@@ -43,6 +43,8 @@ For code changes:
 - Follow existing coding conventions.
 - Do not refactor unrelated code.
 - Preserve backward compatibility unless explicitly requested.
+- Always follow the workflow in `<workspace-root>/code-manager/templates/new-pr-workflow.md` to apply changes.
+- Always first show a plan to the user. Only apply the changes after user say something like "proceed" or "apply the changes".
 
 ## Repository configuration
 

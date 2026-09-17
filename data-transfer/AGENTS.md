@@ -68,7 +68,9 @@ command.
 A transfer to `laptop` means syncing a case from the `local` project directory
 to the laptop.
 
-The generated transfer command should be run on the laptop.
+The generated transfer command should be run on the laptop. So you don't need a server information
+for this.
+And `local` needs to be the server name of `local` instead of "local", this information is in the PROJECT.md file
 
 The source `local` project directory must be obtained from
 `<workspace-root>/.local/PROJECTS.md`.
@@ -100,20 +102,13 @@ The visualization files for a specific step follow the pattern:
 When the user specifies a step, include only the visualization `.vtu` files
 corresponding to that step.
 
+All the rest of files in the case directory should be exclused
+
 Use `rsync` include/exclude rules to select the requested visualization step.
 
-This restriction applies only to the visualization `.vtu` files. Still transfer
-everything else under the `output*` directory that would normally be transferred
-according to the other ASPECT simulation transfer rules.
-
-For example, requesting step `123` selects:
+For example, requesting step `123` only selects:
 
 `output*/solution/solution-00123.pvtu`
 `output*/solution/solution-00123.*.vtu`
 
-and excludes `.vtu` and `.pvtu` files belonging to other visualization steps.
-
-The normal transfer rules and default ASPECT exclusions still apply.
-
-If the user does not specify a step, do not restrict visualization output by
-step.
+If the user does not specify a step, do not apply this rule.

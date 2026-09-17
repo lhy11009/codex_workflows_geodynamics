@@ -127,6 +127,8 @@ The agent may:
 Modifications are permitted and must follow the workflow defined in the <workspace-root>/code-manager/templates/new-pr-workflow.md. If this markdown file is missing, report a problem before doing any modification to the repository.
 Modifications must always use the local main branch.
 
+Always first show a plan to the user. Only apply the modification after user say something like "proceed" or "apply the changes".
+
 If not specifically mentioned, start with the local main branch when modify the code.
 
 # Project discovery
@@ -157,6 +159,7 @@ A project configuration may include:
 * HaMaGeoLib main notebook or processing scripts,
 * HaMaGeoLib tests,
 * machine or remote system,
+* project-specific workflow (e.g. create new cases; analyze dataset)
 * other project-specific paths or settings.
 
 When the user refers to a project by name:
@@ -166,6 +169,7 @@ When the user refers to a project by name:
 3. Determine which machine/configuration applies to the current task.
 4. Retrieve the project directory and any other configuration required for the task.
 5. Use the paths exactly as defined in `PROJECTS.md`.
+6. Determine the project-specific workflow for operations.
 
 Do not guess project locations or project-specific ASPECT branches, builds, notebooks, scripts, or tests.
 
