@@ -126,3 +126,29 @@ Note that `0 */5 * * *` means execution at hours divisible by five rather than a
     20:00
 
 followed by 00:00 the next day.
+
+## Build a summary index
+
+Use `scripts/extract_summary.py` to assemble generated Markdown summaries and
+their original PDF files into a JSON Lines index:
+
+```bash
+python scripts/extract_summary.py \
+    --input /path/to/markdown_summary \
+    --literature /path/to/papers \
+    --output /path/to/literature.jsonl
+```
+
+The input can be one Markdown summary or a directory, which is searched
+recursively. Each output line contains the paper title, the relative Markdown
+and PDF paths, and the extracted key-takeaway summaries:
+
+```json
+{"title": "Paper A", "source": "paper_a.md", "pdf": "paper_a.pdf", "takeaways": ["Result 1", "Result 2"]}
+```
+
+When a summary has YAML front matter, its `pdf` field identifies the original
+PDF. Otherwise, the script matches the Markdown and PDF filename stems. A
+terminal summary suffix such as `_1` or `_2` is ignored only when an exact
+stem match is unavailable. Missing or ambiguous PDF matches are reported as
+errors.

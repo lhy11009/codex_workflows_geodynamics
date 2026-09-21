@@ -1,7 +1,17 @@
+import json
+import subprocess
+import sys
 from pathlib import Path
 
+import pytest
+
+import scripts.extract_summary as extract_summary_module
 from scripts.extract_summary import (
+    build_jsonl_index,
+    extract_title,
     extract_takeaways,
+    find_markdown_files,
+    match_pdf_file,
     validate_summary_format,
 )
 
@@ -9,6 +19,7 @@ from scripts.extract_summary import (
 MARKDOWN_FIXTURE_DIR = (
     Path(__file__).parent / "fixtures" / "markdown_summary"
 )
+LITERATURE_FIXTURE_DIR = Path(__file__).parent / "fixtures" / "literature"
 
 SUMMARY_FILE = (
     MARKDOWN_FIXTURE_DIR
@@ -60,3 +71,203 @@ def test_extract_takeaways():
         "requires oceanic-arc accretion to offset loss at erosive continental "
         "margins."
     )
+
+
+def make_summary(title: str, takeaways: list[str], front_matter: str = "") -> str:
+    """Create a minimal valid literature summary."""
+    takeaway_text = "\n\n".join(
+        f"### Takeaway {number}\n\n**Summary:** {takeaway}"
+        for number, takeaway in enumerate(takeaways, start=1)
+    )
+    return (
+        f"{front_matter}# {title}\n\n"
+        f"## Key takeaways\n\n{takeaway_text}\n\n"
+        "## Figure summaries\n"
+    )
+
+
+def test_extract_title():
+    markdown_text = make_summary("A paper title", ["A result."])
+
+    assert extract_title(markdown_text) == "A paper title"
+
+
+def test_extract_title_requires_one_level_one_heading():
+    markdown_text = make_summary("A paper title", ["A result."])
+    markdown_text += "\n# A second title\n"
+
+    with pytest.raises(ValueError, match="exactly one level-one heading"):
+        extract_title(markdown_text)
+
+
+def test_find_markdown_files_accepts_file_and_directory(tmp_path):
+    nested_directory = tmp_path / "nested"
+    nested_directory.mkdir()
+    first = tmp_path / "b.md"
+    second = nested_directory / "a.md"
+    ignored = tmp_path / "notes.txt"
+    first.write_text("first", encoding="utf-8")
+    second.write_text("second", encoding="utf-8")
+    ignored.write_text("ignored", encoding="utf-8")
+
+    assert find_markdown_files(first) == [first]
+    assert find_markdown_files(tmp_path) == sorted([first, second])
+
+
+def test_match_pdf_file_uses_front_matter(tmp_path):
+    summary = tmp_path / "renamed_summary.md"
+    summary.write_text(
+        make_summary(
+            "Paper",
+            ["Result."],
+            front_matter="---\npdf: original.pdf\n---\n",
+        ),
+        encoding="utf-8",
+    )
+    pdf = tmp_path / "original.pdf"
+    pdf.touch()
+
+    assert match_pdf_file(summary, [pdf]) == pdf
+
+
+def test_match_pdf_file_uses_stem_and_numbered_suffix(tmp_path):
+    pdf = tmp_path / "paper.pdf"
+    pdf.touch()
+    exact_summary = tmp_path / "paper.md"
+    numbered_summary = tmp_path / "paper_2.md"
+    exact_summary.touch()
+    numbered_summary.touch()
+
+    assert match_pdf_file(exact_summary, [pdf]) == pdf
+    assert match_pdf_file(numbered_summary, [pdf]) == pdf
+
+
+def test_match_pdf_file_rejects_ambiguous_filename(tmp_path):
+    summary = tmp_path / "paper.md"
+    summary.touch()
+    first_pdf = tmp_path / "first" / "paper.pdf"
+    second_pdf = tmp_path / "second" / "paper.pdf"
+    first_pdf.parent.mkdir()
+    second_pdf.parent.mkdir()
+    first_pdf.touch()
+    second_pdf.touch()
+
+    with pytest.raises(ValueError, match="Ambiguous PDF match"):
+        match_pdf_file(summary, [first_pdf, second_pdf])
+
+
+def test_match_pdf_file_rejects_missing_pdf(tmp_path):
+    summary = tmp_path / "missing.md"
+    summary.touch()
+
+    with pytest.raises(ValueError, match="No PDF match found"):
+        match_pdf_file(summary, [])
+
+
+def test_build_jsonl_index(tmp_path, monkeypatch):
+    summary_directory = tmp_path / "summaries"
+    literature_directory = tmp_path / "literature"
+    summary_directory.mkdir()
+    literature_directory.mkdir()
+
+    (summary_directory / "paper_b.md").write_text(
+        make_summary("Paper B", ["Result B1.", "Result B2."]),
+        encoding="utf-8",
+    )
+    (summary_directory / "paper_a.md").write_text(
+        make_summary("Päper A", ["Résult A1."]),
+        encoding="utf-8",
+    )
+    first_pdf = literature_directory / "paper_a.pdf"
+    second_pdf = literature_directory / "paper_b.pdf"
+    first_pdf.touch()
+    second_pdf.touch()
+
+    accessed_pdfs = []
+
+    def record_pdf_access(pdf_path):
+        accessed_pdfs.append(pdf_path)
+        return {"filename": pdf_path.name}
+
+    monkeypatch.setattr(
+        extract_summary_module,
+        "extract_pdf_metadata",
+        record_pdf_access,
+    )
+
+    output_path = tmp_path / "index.jsonl"
+    build_jsonl_index(
+        summary_directory,
+        literature_directory,
+        output_path,
+    )
+
+    records = [
+        json.loads(line)
+        for line in output_path.read_text(encoding="utf-8").splitlines()
+    ]
+
+    assert records == [
+        {
+            "title": "Päper A",
+            "source": "paper_a.md",
+            "pdf": "paper_a.pdf",
+            "takeaways": ["Résult A1."],
+        },
+        {
+            "title": "Paper B",
+            "source": "paper_b.md",
+            "pdf": "paper_b.pdf",
+            "takeaways": ["Result B1.", "Result B2."],
+        },
+    ]
+    assert accessed_pdfs == [first_pdf, second_pdf]
+    assert "Päper A" in output_path.read_text(encoding="utf-8")
+
+
+def test_direct_cli_help_runs():
+    script_path = Path(__file__).parents[1] / "scripts" / "extract_summary.py"
+
+    result = subprocess.run(
+        [sys.executable, str(script_path), "--help"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    assert "--literature" in result.stdout
+
+
+def test_direct_cli_builds_index(tmp_path):
+    script_path = Path(__file__).parents[1] / "scripts" / "extract_summary.py"
+    summary_path = tmp_path / "Billen_Hirth_2005.md"
+    output_path = tmp_path / "index.jsonl"
+    summary_path.write_text(
+        make_summary("Billen and Hirth", ["A result."]),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--input",
+            str(summary_path),
+            "--literature",
+            str(LITERATURE_FIXTURE_DIR),
+            "--output",
+            str(output_path),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert json.loads(output_path.read_text(encoding="utf-8")) == {
+        "title": "Billen and Hirth",
+        "source": "Billen_Hirth_2005.md",
+        "pdf": "Billen_Hirth_2005.pdf",
+        "takeaways": ["A result."],
+    }
