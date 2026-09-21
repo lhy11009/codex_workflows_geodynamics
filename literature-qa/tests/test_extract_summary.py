@@ -223,6 +223,12 @@ def test_build_jsonl_index(tmp_path, monkeypatch):
     ]
     assert accessed_pdfs == [first_pdf, second_pdf]
     assert "Päper A" in output_path.read_text(encoding="utf-8")
+    assert json.loads(
+        (tmp_path / "unmatched.json").read_text(encoding="utf-8")
+    ) == {
+        "summaries_without_pdf": [],
+        "pdfs_without_summary": [],
+    }
 
 
 def test_direct_cli_help_runs():

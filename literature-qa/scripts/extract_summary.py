@@ -129,19 +129,33 @@ def build_jsonl_index(
     summary_input: Path,
     literature_directory: Path,
     output_path: Path,
+    unmatched_output_path: Path | None = None,
 ) -> list[dict]:
     """Build a JSON Lines index from Markdown summaries and source PDFs."""
     summary_files = find_markdown_files(summary_input)
     pdf_files = find_pdf_files(literature_directory)
     summary_root = summary_input if summary_input.is_dir() else summary_input.parent
+    if unmatched_output_path is None:
+        unmatched_output_path = output_path.with_name("unmatched.json")
 
     records = []
+    matched_pdf_files = set()
+    summaries_without_pdf = []
     for summary_file in summary_files:
         markdown_text = summary_file.read_text(encoding="utf-8")
-        pdf_file = match_pdf_file(summary_file, pdf_files)
+        try:
+            pdf_file = match_pdf_file(summary_file, pdf_files)
+        except ValueError as error:
+            if str(error).startswith("No PDF match found"):
+                summaries_without_pdf.append(
+                    summary_file.relative_to(summary_root).as_posix()
+                )
+                continue
+            raise
 
         # Opening the PDF verifies that the indexed source remains accessible.
         extract_pdf_metadata(pdf_file)
+        matched_pdf_files.add(pdf_file)
 
         records.append(
             {
@@ -156,6 +170,20 @@ def build_jsonl_index(
     with output_path.open("w", encoding="utf-8") as output_file:
         for record in records:
             output_file.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+    unmatched = {
+        "summaries_without_pdf": summaries_without_pdf,
+        "pdfs_without_summary": [
+            pdf_file.relative_to(literature_directory).as_posix()
+            for pdf_file in pdf_files
+            if pdf_file not in matched_pdf_files
+        ],
+    }
+    unmatched_output_path.parent.mkdir(parents=True, exist_ok=True)
+    unmatched_output_path.write_text(
+        json.dumps(unmatched, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
     return records
 
@@ -277,13 +305,33 @@ def parse_arguments() -> argparse.Namespace:
         help="Path to the output JSON Lines index.",
     )
 
+    parser.add_argument(
+        "--unmatched-output",
+        type=Path,
+        help=(
+            "Path to the unmatched-file report. Defaults to unmatched.json "
+            "beside the output index."
+        ),
+    )
+
     return parser.parse_args()
 
 
 def main() -> None:
     """Build a JSON Lines index from literature summaries."""
     args = parse_arguments()
-    build_jsonl_index(args.input, args.literature, args.output)
+    records = build_jsonl_index(
+        args.input,
+        args.literature,
+        args.output,
+        unmatched_output_path=args.unmatched_output,
+    )
+    unmatched_output = args.unmatched_output or args.output.with_name(
+        "unmatched.json"
+    )
+    print(f"Indexed summaries: {len(records)}")
+    print(f"JSONL index: {args.output}")
+    print(f"Unmatched report: {unmatched_output}")
 
 
 if __name__ == "__main__":

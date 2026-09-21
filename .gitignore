@@ -4,6 +4,7 @@
 # Literature Q&A generated indexes
 literature-qa/index/*
 !literature-qa/index/.gitkeep
+literature-qa/.test/
 
 # Python generated files
 __pycache__/

@@ -136,7 +136,8 @@ their original PDF files into a JSON Lines index:
 python scripts/extract_summary.py \
     --input /path/to/markdown_summary \
     --literature /path/to/papers \
-    --output /path/to/literature.jsonl
+    --output /path/to/literature.jsonl \
+    --unmatched-output /path/to/unmatched.json
 ```
 
 The input can be one Markdown summary or a directory, which is searched
@@ -150,5 +151,7 @@ and PDF paths, and the extracted key-takeaway summaries:
 When a summary has YAML front matter, its `pdf` field identifies the original
 PDF. Otherwise, the script matches the Markdown and PDF filename stems. A
 terminal summary suffix such as `_1` or `_2` is ignored only when an exact
-stem match is unavailable. Missing or ambiguous PDF matches are reported as
-errors.
+stem match is unavailable. Summaries without PDFs are omitted from the JSONL
+index, while PDFs without summaries are also identified. Both categories are
+written to `unmatched.json` beside the index by default, or to the path given
+with `--unmatched-output`. Ambiguous matches remain errors.
