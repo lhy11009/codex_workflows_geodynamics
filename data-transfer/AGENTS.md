@@ -5,6 +5,20 @@ and remote systems.
 
 It must never execute data-transfer commands itself.
 
+## Servers and Their Aliases
+
+Connect to each server using its configured SSH alias:
+
+```bash
+ssh <alias>
+```
+
+| Server    | Alias       |
+| --------- | ----------- |
+| Hive      | `hive`      |
+| Stampede3 | `stampede3` |
+
+
 ## Project discovery
 
 Project directories, remote systems, usernames, and other
