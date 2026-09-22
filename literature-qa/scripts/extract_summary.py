@@ -196,11 +196,6 @@ def validate_summary_format(markdown_text: str) -> None:
             "Invalid summary format: missing '## Key takeaways' section."
         )
 
-    if "## Figure summaries" not in markdown_text:
-        raise ValueError(
-            "Invalid summary format: missing '## Figure summaries' section."
-        )
-
     key_takeaways_text = markdown_text.split(
         "## Key takeaways", 1
     )[1].split(

@@ -73,6 +73,18 @@ def test_extract_takeaways():
     )
 
 
+def test_extract_takeaways_without_figure_summaries():
+    """Test that figure summaries are optional."""
+    markdown_text = (
+        "# A paper title\n\n"
+        "## Key takeaways\n\n"
+        "### Takeaway 1\n\n"
+        "**Summary:** A result.\n"
+    )
+
+    assert extract_takeaways(markdown_text) == ["A result."]
+
+
 def make_summary(title: str, takeaways: list[str], front_matter: str = "") -> str:
     """Create a minimal valid literature summary."""
     takeaway_text = "\n\n".join(
