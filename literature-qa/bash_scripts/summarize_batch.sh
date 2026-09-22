@@ -34,6 +34,8 @@ usage()
     echo "Options:"
     echo "  -n, --newest-first  Process newer PDFs before older PDFs."
     echo "                      Falls back to modification time when creation time is unavailable."
+    echo "  -e, --exclude-subdirectory NAME"
+    echo "                      Skip PDFs below directories named NAME. May be repeated."
     echo "  -z, --zotero-storage"
     echo "                      Read Zotero item keys from PDF parent directories and add metadata."
     echo "  -h, --help          Show this help message."
@@ -45,6 +47,7 @@ usage()
 
 SORT_NEWEST_FIRST=false
 ZOTERO_STORAGE=false
+EXCLUDED_SUBDIRECTORIES=()
 POSITIONAL_ARGUMENTS=()
 
 parse_arguments()
@@ -57,6 +60,14 @@ parse_arguments()
                 ;;
             -n|--newest-first)
                 SORT_NEWEST_FIRST=true
+                ;;
+            -e|--exclude-subdirectory)
+                if (( $# < 2 )); then
+                    echo "Error: $1 requires a subdirectory name." >&2
+                    return 1
+                fi
+                EXCLUDED_SUBDIRECTORIES+=("$2")
+                shift
                 ;;
             -z|--zotero-storage)
                 ZOTERO_STORAGE=true
@@ -114,6 +125,17 @@ if ! [[ "${BATCH_SIZE}" =~ ^[1-9][0-9]*$ ]]; then
     exit 1
 fi
 
+for excluded_subdirectory in "${EXCLUDED_SUBDIRECTORIES[@]}"; do
+    if [[ -z "${excluded_subdirectory}" ||
+          "${excluded_subdirectory}" == "." ||
+          "${excluded_subdirectory}" == ".." ||
+          "${excluded_subdirectory}" == */* ]]; then
+        echo "Error: excluded subdirectory must be a single directory name:"
+        echo "  ${excluded_subdirectory}"
+        exit 1
+    fi
+done
+
 # make the output directory
 mkdir -p "${OUTPUT_DIR}"
 
@@ -134,6 +156,9 @@ log "Starting summarize batch"
 log "Literature directory: ${LITERATURE_DIR}"
 log "Output directory: ${OUTPUT_DIR}"
 log "Batch size: ${BATCH_SIZE}"
+if (( ${#EXCLUDED_SUBDIRECTORIES[@]} > 0 )); then
+    log "Excluded subdirectories: ${EXCLUDED_SUBDIRECTORIES[*]}"
+fi
 
 if [[ "${SORT_NEWEST_FIRST}" == true ]]; then
     mapfile -d '' PDF_FILES < <(
@@ -163,6 +188,42 @@ else
         sort -z
     )
 fi
+
+pdf_is_excluded()
+{
+    local pdf_relative_path="${1#"${LITERATURE_DIR}/"}"
+    local pdf_parent_path="${pdf_relative_path%/*}"
+    local -a directory_parts=()
+    local directory_part
+    local excluded_subdirectory
+
+    if [[ "${pdf_parent_path}" == "${pdf_relative_path}" ]]; then
+        return 1
+    fi
+
+    IFS='/' read -r -a directory_parts <<< "${pdf_parent_path}"
+    for directory_part in "${directory_parts[@]}"; do
+        for excluded_subdirectory in "${EXCLUDED_SUBDIRECTORIES[@]}"; do
+            if [[ "${directory_part}" == "${excluded_subdirectory}" ]]; then
+                EXCLUDED_SUBDIRECTORY_MATCH="${excluded_subdirectory}"
+                return 0
+            fi
+        done
+    done
+
+    return 1
+}
+
+FILTERED_PDF_FILES=()
+EXCLUDED_SUBDIRECTORY_MATCH=""
+for pdf_file in "${PDF_FILES[@]}"; do
+    if pdf_is_excluded "${pdf_file}"; then
+        log "Skipping excluded subdirectory PDF: $(basename "${pdf_file}") (${EXCLUDED_SUBDIRECTORY_MATCH})"
+        continue
+    fi
+    FILTERED_PDF_FILES+=("${pdf_file}")
+done
+PDF_FILES=("${FILTERED_PDF_FILES[@]}")
 
 log "PDF files discovered: ${#PDF_FILES[@]}"
 

@@ -47,6 +47,23 @@ For example:
         10 \
         -n
 
+Use the repeatable options:
+
+    -e NAME
+    --exclude-subdirectory NAME
+
+to skip PDFs below directories named `NAME`. Names match exact directory
+components at any depth below the literature directory.
+
+For example:
+
+    ./bash_scripts/summarize_batch.sh \
+        --exclude-subdirectory markdown_summary \
+        --exclude-subdirectory archive \
+        /home/lochy/Documents/papers \
+        /home/lochy/Documents/papers/markdown_summary \
+        10
+
 Use:
 
     -z

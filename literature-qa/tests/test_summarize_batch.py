@@ -40,6 +40,7 @@ def test_help_option(arguments):
     assert result.returncode == 0
     assert "Usage:" in result.stdout
     assert "<literature-dir> <output-dir> <number-of-papers>" in result.stdout
+    assert "--exclude-subdirectory" in result.stdout
     assert "-z, --zotero-storage" in result.stdout
     assert result.stderr == ""
 
@@ -195,6 +196,63 @@ def test_newest_first_orders_pdfs_by_creation_time(
     calls = log_file.read_text(encoding="utf-8").splitlines()
     assert len(calls) == 1
     assert "a_newer.pdf" in calls[0]
+
+
+def test_exclude_subdirectory_skips_pdfs_by_exact_directory_name(tmp_path):
+    """Skip PDFs below each named literature subdirectory."""
+    literature_dir = tmp_path / "literature"
+    output_dir = tmp_path / "output"
+    mock_bin_dir = tmp_path / "bin"
+    log_file = tmp_path / "codex.log"
+
+    (literature_dir / "included").mkdir(parents=True)
+    (literature_dir / "archive").mkdir()
+    (literature_dir / "topic" / "private").mkdir(parents=True)
+    (literature_dir / "archive-copy").mkdir()
+    output_dir.mkdir()
+    mock_bin_dir.mkdir()
+
+    (literature_dir / "included" / "included.pdf").touch()
+    (literature_dir / "archive" / "archived.pdf").touch()
+    (literature_dir / "topic" / "private" / "private.pdf").touch()
+    (literature_dir / "archive-copy" / "similar_name.pdf").touch()
+
+    create_mock_codex(mock_bin_dir, log_file)
+    env = os.environ.copy()
+    env["PATH"] = f"{mock_bin_dir}:{env['PATH']}"
+
+    result = subprocess.run(
+        [
+            SCRIPT,
+            "--exclude-subdirectory",
+            "archive",
+            str(literature_dir),
+            "--exclude-subdirectory",
+            "private",
+            str(output_dir),
+            "4",
+        ],
+        cwd=PROJECT_ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    calls = log_file.read_text(encoding="utf-8")
+    assert "included.pdf" in calls
+    assert "similar_name.pdf" in calls
+    assert "archived.pdf" not in calls
+    assert "private.pdf" not in calls
+    assert "PDF files discovered: 2" in result.stdout
+    assert (
+        "Skipping excluded subdirectory PDF: archived.pdf (archive)"
+        in result.stdout
+    )
+    assert (
+        "Skipping excluded subdirectory PDF: private.pdf (private)"
+        in result.stdout
+    )
 
 
 def test_batch_size_and_skip_existing(tmp_path):
