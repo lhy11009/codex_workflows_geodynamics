@@ -231,7 +231,10 @@ def test_build_jsonl_index(tmp_path, monkeypatch):
 
     def record_pdf_access(pdf_path):
         accessed_pdfs.append(pdf_path)
-        return {"filename": pdf_path.name}
+        return {
+            "filename": pdf_path.name,
+            "author": f"Author of {pdf_path.stem}",
+        }
 
     monkeypatch.setattr(
         extract_summary_module,
@@ -254,12 +257,14 @@ def test_build_jsonl_index(tmp_path, monkeypatch):
     assert records == [
         {
             "title": "Päper A",
+            "author": "Author of paper_a",
             "source": "paper_a.md",
             "pdf": "paper_a.pdf",
             "takeaways": ["Résult A1."],
         },
         {
             "title": "Paper B",
+            "author": "Author of paper_b",
             "source": "paper_b.md",
             "pdf": "paper_b.pdf",
             "takeaways": ["Result B1.", "Result B2."],
@@ -317,6 +322,7 @@ def test_direct_cli_builds_index(tmp_path):
     assert result.returncode == 0, result.stderr
     assert json.loads(output_path.read_text(encoding="utf-8")) == {
         "title": "Billen and Hirth",
+        "author": "Magali I. Billen, Greg Hirth",
         "source": "Billen_Hirth_2005.md",
         "pdf": "Billen_Hirth_2005.pdf",
         "takeaways": ["A result."],

@@ -141,13 +141,13 @@ python scripts/extract_summary.py \
 ```
 
 The input can be one Markdown summary or a directory, which is searched
-recursively. Each output line contains the paper title, the relative Markdown
-and PDF paths, and the extracted key-takeaway summaries. When the Markdown
-contains a `## Methods` section, the output also contains the text from each
-`**Method:**` field:
+recursively. Each output line contains the paper title, the author metadata
+from the PDF, the relative Markdown and PDF paths, and the extracted
+key-takeaway summaries. When the Markdown contains a `## Methods` section, the
+output also contains the text from each `**Method:**` field:
 
 ```json
-{"title": "Paper A", "source": "paper_a.md", "pdf": "paper_a.pdf", "takeaways": ["Result 1", "Result 2"], "methods": ["Thin-viscous-shell scaling analysis"]}
+{"title": "Paper A", "author": "Author One, Author Two", "source": "paper_a.md", "pdf": "paper_a.pdf", "takeaways": ["Result 1", "Result 2"], "methods": ["Thin-viscous-shell scaling analysis"]}
 ```
 
 The Methods section is optional. Records produced from summaries without it do

@@ -36,6 +36,10 @@ def test_build_fixture_directories_jsonl_index():
         "Billen_Hirth_2005.pdf",
         "Hansen_2007.pdf",
     ]
+    assert [record["author"] for record in records] == [
+        "Magali I. Billen, Greg Hirth",
+        "ericchristensen",
+    ]
     assert [len(record["takeaways"]) for record in records] == [4, 5]
     assert records[0]["methods"] == [
         "Two-dimensional spherical finite-element thermal-convection models",

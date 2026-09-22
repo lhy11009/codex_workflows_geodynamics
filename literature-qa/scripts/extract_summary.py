@@ -154,11 +154,12 @@ def build_jsonl_index(
             raise
 
         # Opening the PDF verifies that the indexed source remains accessible.
-        extract_pdf_metadata(pdf_file)
+        pdf_metadata = extract_pdf_metadata(pdf_file)
         matched_pdf_files.add(pdf_file)
 
         record = {
             "title": extract_title(markdown_text),
+            "author": pdf_metadata["author"],
             "source": summary_file.relative_to(summary_root).as_posix(),
             "pdf": pdf_file.relative_to(literature_directory).as_posix(),
             "takeaways": extract_takeaways(markdown_text),
