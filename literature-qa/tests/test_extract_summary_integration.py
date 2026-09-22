@@ -37,6 +37,18 @@ def test_build_fixture_directories_jsonl_index():
         "Hansen_2007.pdf",
     ]
     assert [len(record["takeaways"]) for record in records] == [4, 5]
+    assert records[0]["methods"] == [
+        "Two-dimensional spherical finite-element thermal-convection models",
+        "Visco-plastic lithosphere and low-viscosity plate-boundary shear zone",
+        "Comparison of Newtonian and composite wet-olivine creep laws",
+        "Parameter sweep and subduction-style classification",
+    ]
+    assert records[1]["methods"] == [
+        "Conceptual process-chain construction",
+        "Mechanical and petrologic plausibility reasoning",
+        "Comparative planetary boundary-condition analysis",
+        "Consequence and reservation analysis",
+    ]
     assert records[0]["title"].startswith(
         "Newtonian versus non-Newtonian upper mantle viscosity"
     )

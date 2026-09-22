@@ -9,7 +9,7 @@ index.
 
 Currently supported:
     - Validation of the key-takeaway structure.
-    - Extraction of paper titles and takeaway summaries.
+    - Extraction of paper titles, takeaway summaries, and method highlights.
     - Matching summaries to their source PDF files.
     - Creation of a JSON Lines literature index.
 
@@ -157,14 +157,16 @@ def build_jsonl_index(
         extract_pdf_metadata(pdf_file)
         matched_pdf_files.add(pdf_file)
 
-        records.append(
-            {
-                "title": extract_title(markdown_text),
-                "source": summary_file.relative_to(summary_root).as_posix(),
-                "pdf": pdf_file.relative_to(literature_directory).as_posix(),
-                "takeaways": extract_takeaways(markdown_text),
-            }
-        )
+        record = {
+            "title": extract_title(markdown_text),
+            "source": summary_file.relative_to(summary_root).as_posix(),
+            "pdf": pdf_file.relative_to(literature_directory).as_posix(),
+            "takeaways": extract_takeaways(markdown_text),
+        }
+        methods = extract_methods(markdown_text)
+        if methods:
+            record["methods"] = methods
+        records.append(record)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as output_file:
@@ -271,6 +273,26 @@ def extract_takeaways(markdown_text: str) -> list[str]:
         takeaways.append(match.group(1).strip())
 
     return takeaways
+
+
+def extract_methods(markdown_text: str) -> list[str]:
+    """Extract method highlights from an optional Methods section."""
+    methods_section = re.search(
+        r"^## Methods\s*$\n(.*?)(?=^##\s+|\Z)",
+        markdown_text,
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    if methods_section is None:
+        return []
+
+    return [
+        method.strip()
+        for method in re.findall(
+            r"^\*\*Method:\*\*\s+(.+)$",
+            methods_section.group(1),
+            flags=re.MULTILINE,
+        )
+    ]
 
 
 def parse_arguments() -> argparse.Namespace:

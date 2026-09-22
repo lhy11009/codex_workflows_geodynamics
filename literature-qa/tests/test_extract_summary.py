@@ -85,6 +85,38 @@ def test_extract_takeaways_without_figure_summaries():
     assert extract_takeaways(markdown_text) == ["A result."]
 
 
+def test_extract_methods():
+    """Test extraction of optional method highlights."""
+    markdown_text = (
+        "# A paper title\n\n"
+        "## Key takeaways\n\n"
+        "### Takeaway 1\n\n"
+        "**Summary:** A result.\n\n"
+        "## Methods\n\n"
+        "### Method 1\n\n"
+        "**Method:** Thin-viscous-shell scaling analysis\n\n"
+        "- **Setup:** Detailed setup.\n"
+        "- **Purpose:** First purpose.\n\n"
+        "### Method 2\n\n"
+        "**Method:** Axisymmetric boundary-element modeling\n\n"
+        "- **Setup:** Another setup.\n"
+        "- **Purpose:** Second purpose.\n\n"
+        "## Figure summaries\n"
+    )
+
+    assert extract_summary_module.extract_methods(markdown_text) == [
+        "Thin-viscous-shell scaling analysis",
+        "Axisymmetric boundary-element modeling",
+    ]
+
+
+def test_extract_methods_without_methods_section():
+    """Test that a Methods section is optional."""
+    markdown_text = make_summary("A paper title", ["A result."])
+
+    assert extract_summary_module.extract_methods(markdown_text) == []
+
+
 def make_summary(title: str, takeaways: list[str], front_matter: str = "") -> str:
     """Create a minimal valid literature summary."""
     takeaway_text = "\n\n".join(
