@@ -137,7 +137,7 @@ python scripts/extract_summary.py \
     --input /path/to/markdown_summary \
     --literature /path/to/papers \
     --output /path/to/literature.jsonl \
-    --unmatched-output /path/to/unmatched.json
+    --report-output /path/to/match_report.json
 ```
 
 The input can be one Markdown summary or a directory, which is searched
@@ -158,5 +158,7 @@ PDF. Otherwise, the script matches the Markdown and PDF filename stems. A
 terminal summary suffix such as `_1` or `_2` is ignored only when an exact
 stem match is unavailable. Summaries without PDFs are omitted from the JSONL
 index, while PDFs without summaries are also identified. Both categories are
-written to `unmatched.json` beside the index by default, or to the path given
-with `--unmatched-output`. Ambiguous matches remain errors.
+written to `match_report.json` beside the index by default, or to the path
+given with `--report-output`. When multiple PDFs match one summary, the first
+PDF in the sorted literature-file list is indexed and the selected PDF and all
+candidates are recorded under `ambiguous_pdf_matches` in the report.

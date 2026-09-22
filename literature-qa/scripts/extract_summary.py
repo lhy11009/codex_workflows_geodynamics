@@ -84,8 +84,11 @@ def _extract_front_matter(markdown_text: str) -> dict[str, str]:
     return {}
 
 
-def match_pdf_file(summary_path: Path, pdf_files: list[Path]) -> Path:
-    """Match a Markdown summary to exactly one source PDF."""
+def _find_pdf_candidates(
+    summary_path: Path,
+    pdf_files: list[Path],
+) -> list[Path]:
+    """Find ordered source-PDF candidates for a Markdown summary."""
     markdown_text = summary_path.read_text(encoding="utf-8")
     front_matter = _extract_front_matter(markdown_text)
     declared_pdf = front_matter.get("pdf", "")
@@ -113,14 +116,15 @@ def match_pdf_file(summary_path: Path, pdf_files: list[Path]) -> Path:
             base_stem = re.sub(r"_\d+$", "", summary_path.stem)
             candidates = [path for path in pdf_files if path.stem == base_stem]
 
+    return candidates
+
+
+def match_pdf_file(summary_path: Path, pdf_files: list[Path]) -> Path:
+    """Match a Markdown summary to the first source-PDF candidate."""
+    candidates = _find_pdf_candidates(summary_path, pdf_files)
+
     if not candidates:
         raise ValueError(f"No PDF match found for summary: {summary_path}")
-
-    if len(candidates) > 1:
-        matches = ", ".join(str(path) for path in candidates)
-        raise ValueError(
-            f"Ambiguous PDF match for summary {summary_path}: {matches}"
-        )
 
     return candidates[0]
 
@@ -129,29 +133,46 @@ def build_jsonl_index(
     summary_input: Path,
     literature_directory: Path,
     output_path: Path,
-    unmatched_output_path: Path | None = None,
+    report_output_path: Path | None = None,
 ) -> list[dict]:
     """Build a JSON Lines index from Markdown summaries and source PDFs."""
     summary_files = find_markdown_files(summary_input)
     pdf_files = find_pdf_files(literature_directory)
     summary_root = summary_input if summary_input.is_dir() else summary_input.parent
-    if unmatched_output_path is None:
-        unmatched_output_path = output_path.with_name("unmatched.json")
+    if report_output_path is None:
+        report_output_path = output_path.with_name("match_report.json")
 
     records = []
     matched_pdf_files = set()
     summaries_without_pdf = []
+    ambiguous_pdf_matches = []
     for summary_file in summary_files:
         markdown_text = summary_file.read_text(encoding="utf-8")
-        try:
-            pdf_file = match_pdf_file(summary_file, pdf_files)
-        except ValueError as error:
-            if str(error).startswith("No PDF match found"):
-                summaries_without_pdf.append(
-                    summary_file.relative_to(summary_root).as_posix()
-                )
-                continue
-            raise
+        candidates = _find_pdf_candidates(summary_file, pdf_files)
+        if not candidates:
+            summaries_without_pdf.append(
+                summary_file.relative_to(summary_root).as_posix()
+            )
+            continue
+
+        pdf_file = candidates[0]
+        if len(candidates) > 1:
+            ambiguous_pdf_matches.append(
+                {
+                    "summary": summary_file.relative_to(
+                        summary_root
+                    ).as_posix(),
+                    "selected_pdf": pdf_file.relative_to(
+                        literature_directory
+                    ).as_posix(),
+                    "candidate_pdfs": [
+                        candidate.relative_to(
+                            literature_directory
+                        ).as_posix()
+                        for candidate in candidates
+                    ],
+                }
+            )
 
         # Opening the PDF verifies that the indexed source remains accessible.
         pdf_metadata = extract_pdf_metadata(pdf_file)
@@ -174,17 +195,18 @@ def build_jsonl_index(
         for record in records:
             output_file.write(json.dumps(record, ensure_ascii=False) + "\n")
 
-    unmatched = {
+    match_report = {
         "summaries_without_pdf": summaries_without_pdf,
         "pdfs_without_summary": [
             pdf_file.relative_to(literature_directory).as_posix()
             for pdf_file in pdf_files
             if pdf_file not in matched_pdf_files
         ],
+        "ambiguous_pdf_matches": ambiguous_pdf_matches,
     }
-    unmatched_output_path.parent.mkdir(parents=True, exist_ok=True)
-    unmatched_output_path.write_text(
-        json.dumps(unmatched, ensure_ascii=False, indent=2) + "\n",
+    report_output_path.parent.mkdir(parents=True, exist_ok=True)
+    report_output_path.write_text(
+        json.dumps(match_report, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
 
@@ -324,10 +346,10 @@ def parse_arguments() -> argparse.Namespace:
     )
 
     parser.add_argument(
-        "--unmatched-output",
+        "--report-output",
         type=Path,
         help=(
-            "Path to the unmatched-file report. Defaults to unmatched.json "
+            "Path to the PDF-match report. Defaults to match_report.json "
             "beside the output index."
         ),
     )
@@ -342,14 +364,14 @@ def main() -> None:
         args.input,
         args.literature,
         args.output,
-        unmatched_output_path=args.unmatched_output,
+        report_output_path=args.report_output,
     )
-    unmatched_output = args.unmatched_output or args.output.with_name(
-        "unmatched.json"
+    report_output = args.report_output or args.output.with_name(
+        "match_report.json"
     )
     print(f"Indexed summaries: {len(records)}")
     print(f"JSONL index: {args.output}")
-    print(f"Unmatched report: {unmatched_output}")
+    print(f"PDF match report: {report_output}")
 
 
 if __name__ == "__main__":

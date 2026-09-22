@@ -186,7 +186,7 @@ def test_match_pdf_file_uses_stem_and_numbered_suffix(tmp_path):
     assert match_pdf_file(numbered_summary, [pdf]) == pdf
 
 
-def test_match_pdf_file_rejects_ambiguous_filename(tmp_path):
+def test_match_pdf_file_selects_first_ambiguous_filename(tmp_path):
     summary = tmp_path / "paper.md"
     summary.touch()
     first_pdf = tmp_path / "first" / "paper.pdf"
@@ -196,8 +196,7 @@ def test_match_pdf_file_rejects_ambiguous_filename(tmp_path):
     first_pdf.touch()
     second_pdf.touch()
 
-    with pytest.raises(ValueError, match="Ambiguous PDF match"):
-        match_pdf_file(summary, [first_pdf, second_pdf])
+    assert match_pdf_file(summary, [first_pdf, second_pdf]) == first_pdf
 
 
 def test_match_pdf_file_rejects_missing_pdf(tmp_path):
@@ -273,10 +272,11 @@ def test_build_jsonl_index(tmp_path, monkeypatch):
     assert accessed_pdfs == [first_pdf, second_pdf]
     assert "Päper A" in output_path.read_text(encoding="utf-8")
     assert json.loads(
-        (tmp_path / "unmatched.json").read_text(encoding="utf-8")
+        (tmp_path / "match_report.json").read_text(encoding="utf-8")
     ) == {
         "summaries_without_pdf": [],
         "pdfs_without_summary": [],
+        "ambiguous_pdf_matches": [],
     }
 
 
@@ -292,6 +292,8 @@ def test_direct_cli_help_runs():
 
     assert result.returncode == 0
     assert "--literature" in result.stdout
+    assert "--report-output" in result.stdout
+    assert "--unmatched-output" not in result.stdout
 
 
 def test_direct_cli_builds_index(tmp_path):

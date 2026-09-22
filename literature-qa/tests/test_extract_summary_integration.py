@@ -11,7 +11,7 @@ SUMMARY_DIRECTORY = Path(__file__).parent / "fixtures" / "markdown_summary"
 LITERATURE_DIRECTORY = Path(__file__).parent / "fixtures" / "literature"
 TEST_OUTPUT_DIRECTORY = PROJECT_DIRECTORY / ".test"
 INDEX_PATH = TEST_OUTPUT_DIRECTORY / "literature.jsonl"
-UNMATCHED_PATH = TEST_OUTPUT_DIRECTORY / "unmatched.json"
+REPORT_PATH = TEST_OUTPUT_DIRECTORY / "match_report.json"
 
 
 def test_build_fixture_directories_jsonl_index():
@@ -20,7 +20,7 @@ def test_build_fixture_directories_jsonl_index():
         SUMMARY_DIRECTORY,
         LITERATURE_DIRECTORY,
         INDEX_PATH,
-        unmatched_output_path=UNMATCHED_PATH,
+        report_output_path=REPORT_PATH,
     )
 
     records = [
@@ -58,9 +58,22 @@ def test_build_fixture_directories_jsonl_index():
     )
     assert records[1]["title"] == "Subduction origin on early Earth: A hypothesis"
 
-    assert json.loads(UNMATCHED_PATH.read_text(encoding="utf-8")) == {
+    assert json.loads(REPORT_PATH.read_text(encoding="utf-8")) == {
         "summaries_without_pdf": [
             "Clift04RG_ControlsTectAccretionSubductionErosion_1.md"
         ],
-        "pdfs_without_summary": ["Hosoya_et_al_2005.pdf"],
+        "pdfs_without_summary": [
+            "Hosoya_et_al_2005.pdf",
+            "ambigous/Billen_Hirth_2005.pdf",
+        ],
+        "ambiguous_pdf_matches": [
+            {
+                "summary": "Billen_Hirth_2005.md",
+                "selected_pdf": "Billen_Hirth_2005.pdf",
+                "candidate_pdfs": [
+                    "Billen_Hirth_2005.pdf",
+                    "ambigous/Billen_Hirth_2005.pdf",
+                ],
+            }
+        ],
     }
