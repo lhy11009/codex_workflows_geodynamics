@@ -75,6 +75,20 @@ Run the complete test suite with:
 
 pytest
 
+## Special Requirements
+
+### Workflow for Generating ParaView Plotting Scripts
+
+- **Base utilities:** Common utilities are maintained in `scripts/paraview_scripts/base.py`.
+- **Script separation:** New plotting scripts should be created as separate files and reuse utilities defined in `base.py`, rather than duplicating existing functionality.
+- **Script combination:** The contents of `base.py` and the new plotting scripts will be combined at a later stage through a user-initiated operation. **Do not combine these files during script generation.**
+- **Code organization:**
+  - Place reusable functions and general-purpose utilities in `base.py`.
+  - Place case-specific plotting workflows, configurations, and execution logic in the new plotting scripts.
+  - When developing new functionality, consider whether it should be implemented as a reusable utility in `base.py` or as part of the plotting workflow in the new script.
+- **Compatibility:** Ensure that newly generated scripts remain compatible with the existing utilities and can be combined with `base.py` without naming conflicts or duplicated definitions.
+- **Placeholder options:** Words written entirely in capital letters (e.g., `TOP`) represent placeholders that will be substituted through a later user-initiated operation. **Do not substitute these placeholders during script generation.** When instructed to add configurable options, consider introducing similar uppercase placeholders to support later substitution.
+
 
 
 # WorldBuilder
@@ -82,7 +96,7 @@ pytest
 ## Repository
 
 Local directory:
-<workspace-root>/.softwares/WorldBuilder
+<workspace-root>/Softwares/WorldBuilder
 
 Upstream:
 https://github.com/GeodynamicWorldBuilder/WorldBuilder
@@ -166,12 +180,18 @@ personal fork, push allowed
 
 None
 
-## Indentation
+## Indentation & Parameters
 
 Code indentation can be applied using:
 
 ```bash
 make indent
+```
+
+Code parameters can be updated by:`
+
+```bash
+make parameters
 ```
 
 ## Tests
@@ -180,10 +200,16 @@ For every new test, there must be a reference-data directory with the same name 
 
 At a minimum, the reference-data directory must contain a `screen-output` file.
 
-Tests are built using:
+Tests are enabled using this in the build directory:
 
 ```bash
 make setup_tests
+```
+
+To generate standard output of a test, use this command in the build directory:
+
+```bash
+ASPECT_GENERATE_REFERENCE_OUTPUT=1 ctest -R <test_name>
 ```
 
 # codex_workflows_geodynamics
@@ -212,3 +238,29 @@ Sub-folders have different conda environment. Check their README files.
 ## Tests
 
 Look into the tests defined in the sub-folders.
+
+# fastscape
+
+## Repository
+
+Local directory:
+/home/lochy/Softwares/fastscape/fastscapelib-fortran
+
+Upstream:
+https://github.com/Djneu/fastscapelib-fortran
+
+Fork:
+https://github.com/lhy11009/fastscapelib-fortran
+
+
+## Repository type
+
+fortran project using CMake.
+
+## Git remotes
+
+origin:
+authoritative upstream, read-only
+
+lhy11009:
+personal fork, push allowed

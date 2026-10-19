@@ -31,7 +31,8 @@ ASPECT build:
 ### Build and test
 
 - Tests on this branch has to run in release mode.
-- Tests started with name of `TwoDSubduction_` are tests specifically designed for this project.
+- Tests started with name of `TwoDSubduction_` and `MOW_` are tests specifically designed for this project.
+- When creating new test for this project, make sure the test name starts with `MOW_`.
 
 Below is an example of bash script.
 
@@ -78,6 +79,88 @@ Project directory:
 
 `/quobyte/billengrp/lochy/Collision0`
 
+### Stampede3 (remote)
+
+Project directory:
+
+`/scratch/06806/hyli/Collision0`
+
 ### Project-specific Workflow
 
 None
+
+### Stampede3 (remote)
+
+Project directory:
+
+`/scratch/06806/hyli/MOW`
+
+
+## Prescribe velocity
+
+### Local
+
+Project directory:
+
+`/mnt/lochy/ASPECT_DATA/prescribe_velocity`
+
+ASPECT branch:
+
+`world_builder_prescribed_solution`
+
+ASPECT build:
+
+`/home/lochy/Softwares/aspect/build_world_builder_prescribed_solution`
+
+HaMaGeoLib main notebook:
+
+`notebooks/research/prescribe_velocity/PrescribeVelocity.ipynb`
+
+HaMaGeoLib tests:
+
+`tests/research/prescribe_velocity`
+
+### Hive (remote)
+
+Project directory:
+
+`/quobyte/billengrp/lochy/prescribe_velocity`
+
+### Stampede3 (remote)
+
+Project directory:
+
+`/scratch/06806/hyli/prescribe_velocity`
+
+### Project-specific Workflow
+
+None
+
+
+## Literature
+
+### Local
+
+literature directory:
+
+`/home/lochy/Documents/papers`
+
+markdown directory:
+
+`/home/lochy/Documents/papers/markdown_summary`
+
+json path for extracting summaries:
+
+`/home/lochy/Documents/papers/markdown_summary/summary.jsonl`
+
+unmatched output path for extracting summaries:
+
+`/home/lochy/Documents/papers/markdown_summary/match_report.json`
+
+bibliography files:
+
+`/home/lochy/Documents/papers/bib/codex.bib`
+
+and
+
+`/home/lochy/Documents/papers/bib/myref1.bib`
