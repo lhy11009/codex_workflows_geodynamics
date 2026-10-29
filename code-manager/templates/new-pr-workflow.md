@@ -1,11 +1,10 @@
 # Branch workflow
 
-Use two levels of branches for development:
+Use a specific branch for development:
 
-* A **target/contribution branch**, such as `fix-parser`, represents the complete change that may later be submitted to the upstream repository. This branch is based on `origin/main` and pushed to `lhy11009`.
-* A **Codex working branch**, such as `codex/fix-parser`, is where Codex performs its work. Codex submits changes to the target/contribution branch through a pull request.
+* A **Codex working branch**, such as `codex/fix-parser`, is where Codex performs its work.
 
-Do not work directly on `main` or directly modify the target/contribution branch.
+Do not work directly on `main` or other existing branches specified by the user 
 
 For each task, follow these steps in order:
 
@@ -60,45 +59,33 @@ For each task, follow these steps in order:
 
    If no target branch has been specified, figure out the name youself from the tasks it involves.
 
-4. **Create the target/contribution branch.**
+5. **Create the Codex working branch.**
 
-   If asked to create the target/contribution branch from a remote branch. Start by creating a local branch.
-   For example:
-
+   Start by creating a local branch
+   
    ```bash
-   git switch -c fix-parser origin/main
+   git switch -c codex/fix-parser origin/main
    ```
 
    If otherwise asked to use a local branch, verify that the local branch already exists.
 
-   The target/contribution branch is an integration branch. Do not make the requested code changes directly on this branch.
+   Use a descriptive `codex/` branch name. If a working branch with the same name already exists, append a numerical suffix such as `_1`, `_2`, etc. to create a new branch.
 
-   If the target branch already exists locally or on `lhy11009`, do not recreate, reset, overwrite, or force-push it. Stop and report its current state unless the task explicitly instructs you to continue work on that existing target branch.
-
-5. **Create the Codex working branch.**
-
-   Create a separate working branch from the target/contribution branch. Use a descriptive `codex/` branch name. If a working branch with the same name already exists, append a numerical suffix such as `_1`, `_2`, etc. to create a new branch.
-
-   For example:
-
-   ```bash
-   git switch -c codex/fix-parser fix-parser
-
-6. **Make the requested changes.**
+5. **Make the requested changes.**
 
    Make changes only on the `codex/` working branch. Do not modify `main` or the target/contribution branch directly.
 
-7. **Run tests and checks.**
+6. **Run tests and checks.**
 
    Run the relevant tests and checks before submitting the work.
 
    Fix failures caused by the changes when appropriate. If a required test cannot be run or a failure cannot be resolved safely, report it rather than bypassing the test.
 
-8. **Commit the changes.**
+7. **Commit the changes.**
 
    Commit the completed and tested changes to the Codex working branch.
 
-9. **Create a change patch.**
+8. **Create a change patch.**
 
    Create a patch containing the changes introduced by the current commit.
 
@@ -108,7 +95,7 @@ For each task, follow these steps in order:
 
    Verify that `my.patch` contains only the intended changes before proceeding.
 
-10. **Stop for user review.**
+9. **Stop for user review.**
 
    Stop after `my.patch` has been created and checked.
 
@@ -134,8 +121,8 @@ For each step:
 	4. Report the successful result briefly.
 
 New test branches:
-	Name the two new branch tdd_to_pr_workflow_verification and codex/tdd_to_pr_workflow_verification;
-  When creating these branches, if you find existing local branches with the same name, delete them.
+	Name the two new branch codex/tdd_to_pr_workflow_verification;
+  When creating this branch, if you find existing local branches with the same name, delete them.
   If remote repository with the same name already exists, do forced push.
 
 Test feature to implement:
@@ -148,4 +135,4 @@ If any step fails, produces an unexpected result, or conflicts with the reposito
 	• Report which step failed, the command or operation that failed, and the relevant error/output.
 	• Wait for my instructions before continuing.
 In particular, verify the configured remotes and branch state before creating or pushing any branches.
-Follow all restrictions in AGENTS.md, including the rules governing origin, lhy11009, target/contribution branches, codex/ working branches, pushes, pull requests, and merges.
+Follow all restrictions in AGENTS.md, including the rules governing origin, lhy11009, codex/ working branches, pushes, pull requests, and merges.

@@ -2,6 +2,7 @@
 prefix_rule(pattern=["command", "-v", "git"], decision="allow")
 prefix_rule(pattern=["git", "status"], decision="allow")
 prefix_rule(pattern=["git", "diff"], decision="allow")
+prefix_rule(pattern=["git", "diff", "--cached", "--check"], decision="allow")
 prefix_rule(pattern=["git", "log"], decision="allow")
 prefix_rule(pattern=["git", "add"], decision="allow")
 prefix_rule(pattern=["git", "commit"], decision="allow")
@@ -24,10 +25,12 @@ prefix_rule(pattern=["pwd"], decision="allow")
 prefix_rule(pattern=["ssh", "hive"], decision="allow")
 
 # ASPECT specific
-prefix_rule(
-    pattern=["../build_main_debug/aspect"],
-    decision="allow",
-)
+prefix_rule(pattern=["cmake", "--build", "build_main_debug"], decision="allow")
+prefix_rule(pattern=["build_main_debug/aspect"], decision="allow",)
+prefix_rule(pattern=["../build_main_debug/aspect"], decision="allow",)
+prefix_rule(pattern=["build_main_debug/aspect", "--test"], decision="allow")
+prefix_rule(pattern=["./contrib/utilities/indent"], decision="allow")
+prefix_rule(pattern=["ctest", "--output-on-failure"], decision="allow")
 
 # gdmate specific
 prefix_rule(pattern=["conda", "run", "-n", "py-gdmate", "python", "-m", "pip", "install"], decision="allow")
@@ -35,5 +38,5 @@ prefix_rule(pattern=["conda", "run", "-n", "py-gdmate", "pytest"], decision="all
 prefix_rule(pattern=["conda", "run", "-n", "py-gdmate", "ruff", "check"], decision="allow")
 prefix_rule(pattern=["conda", "run", "-n", "py-gdmate", "python", "-m", "build"], decision="allow")
 prefix_rule(pattern=["conda", "run", "-n", "py-gdmate", "sphinx-build"], decision="allow")
-prefix_rule(pattern=["git", "diff", "--cached", "--check"], decision="allow")
-prefix_rule(pattern=["../build_main_debug/aspect"], decision="allow")
+prefix_rule(pattern=["curl", "-L"], decision="allow")
+prefix_rule(pattern=["../aspect", "--test"], decision="allow")
