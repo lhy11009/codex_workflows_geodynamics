@@ -1,6 +1,9 @@
 # TDD-PR generated local code copies
 .softwares
 
+# Code manager generated notebooks
+code-manager/notes/*
+
 # Literature Q&A generated indexes
 literature-qa/index/*
 !literature-qa/index/.gitkeep
