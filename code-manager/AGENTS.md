@@ -133,5 +133,66 @@ If GitHub CI fails:
 6. Push the fix and verify CI again.
 
 
-# Conversation routine
+## Notebook explanation workflow
 
+### Trigger
+
+When the user includes the phrase `notebook explanation` in a request, activate this workflow.
+
+- The trigger is case-insensitive and may appear anywhere in the user's request.
+- Without this trigger, respond normally in the conversation unless the user explicitly requests a Jupyter notebook.
+
+### Workflow
+
+1. **Create a Jupyter notebook (`.ipynb`)** to explain the requested scientific, mathematical, or technical topic.
+
+2. **Use Markdown cells for explanations and equations.**
+   - Use LaTeX syntax (`$...$` and `$$...$$`) for mathematical expressions.
+   - Use `aligned` or similar environments for multiline derivations.
+   - Explain variables, assumptions, and intermediate steps clearly.
+   - Ensure equations are compatible with Jupyter's Markdown rendering.
+
+3. **Generate scientific sketches when helpful.**
+   - Prefer Python and Matplotlib for diagrams, vector illustrations, coordinate systems, and physical processes.
+   - Include clear labels, annotations, arrows, and units where appropriate.
+   - Distinguish conceptual sketches from quantitative results.
+   - Prefer scientifically meaningful diagrams over decorative illustrations.
+
+4. **Include executable Python examples when appropriate.**
+   - Use numerical demonstrations to illustrate mathematical or physical concepts.
+   - Keep code cells self-contained and reproducible whenever possible.
+   - Use the Python environment configured for the relevant repository when applicable.
+
+5. **Validate the notebook.**
+   - Execute relevant code cells when the environment permits.
+   - Verify that all executed cells run successfully.
+   - Check that figures render correctly and mathematical expressions use valid Jupyter-compatible LaTeX syntax.
+   - Remove unnecessary debugging output and execution errors.
+
+6. **Save and name the notebook.**
+   - Save all generated notebooks under `<workspace-root>/code-manager/notes/` unless the user specifies another location.
+   - Use the filename convention `YYYY-MM-DD-topic.ipynb`.
+   - Use the current date for `YYYY-MM-DD`.
+   - Generate a short, descriptive topic based on the explanation.
+   - Use lowercase letters and underscores (`_`) to separate words in the topic.
+   - Avoid spaces and special characters in filenames.
+   - Examples:
+     - `2026-11-02-jaumann_stress_rate.ipynb`
+     - `2026-11-02-upwind_discretization.ipynb`
+     - `2026-11-02-coordinate_transformations.ipynb`
+   - If a notebook with the same filename already exists, append a numerical suffix (e.g., `_2`, `_3`) rather than overwriting it.
+   - Do not modify or overwrite existing notebooks unless the user explicitly requests an update to a specific notebook.
+
+7. **Summarize the results in the conversation.**
+   - Provide a short summary of the explanation and its main conclusions.
+   - Report the final notebook path.
+   - Mention any limitations if notebook execution or validation could not be completed.
+
+### Restrictions
+
+- This workflow is intended for explanation and visualization, not repository code modification.
+- Do not modify repository source code unless explicitly requested.
+- Notebook generation does not require the repository code-change approval workflow.
+- If the explanation concerns a specific repository, follow the repository identification and configuration requirements before inspecting its code.
+- Do not invent repository-specific details, numerical results, or scientific assumptions.
+- Prefer conceptual clarity, mathematical correctness, and reproducible figures over visual complexity.
