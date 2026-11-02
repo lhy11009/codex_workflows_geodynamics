@@ -1,13 +1,17 @@
-# TDD-PR generated local code copies
+# top-level generated local code copies
 .softwares
 
+# top-level generated temp files
+.dtemp
+
 # Code manager generated notebooks
-code-manager/notes/*
+code-manager/notes/
 
 # Literature Q&A generated indexes
 literature-qa/index/*
 !literature-qa/index/.gitkeep
 literature-qa/.test/
+literature-qa/.dtemp/
 
 # Python generated files
 __pycache__/
