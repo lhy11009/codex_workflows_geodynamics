@@ -264,3 +264,30 @@ authoritative upstream, read-only
 
 lhy11009:
 personal fork, push allowed
+
+
+# usrbin
+
+## Repository
+
+Local directory:
+/home/lochy/Desktop/usrbin
+
+Upstream:
+https://github.com/lhy11009/usrbin
+
+Fork:
+same as upstream
+
+## Git remotes
+
+origin:
+authoritative upstream, push allowed
+
+## Development environment
+
+bash + linux (exclusively)
+
+## Special requriements
+
+Don't include python/jupyter notebook/julia
