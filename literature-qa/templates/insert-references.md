@@ -42,9 +42,7 @@ citation setup, flag the dependency and preserve the preamble.
 
 Search the user-specified bibliography files first. If none are specified,
 check the bibliographies declared by the TeX project, then use the defaults in
-`<workspace-root>/.local/LITERATURE_PROJECTS.md`. If that configuration is absent,
-check `/home/lochy/Documents/papers/bib/codex.bib` first and
-`/home/lochy/Documents/papers/bib/myref1.bib` second, if available.
+`<workspace-root>/.local/LITERATURE_PROJECTS.md`. 
 
 Match entries by DOI when available or by title, authors, year, and version.
 Reuse the exact key and verify that it resolves in the target bibliography.
