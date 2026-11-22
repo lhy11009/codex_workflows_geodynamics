@@ -41,6 +41,8 @@ usage()
     echo "  -h, --help          Show this help message."
     echo "  --                  Stop parsing options."
     echo
+    echo "PDFs with stems ending in _sup, _supplementary, or _appendix are always skipped."
+    echo
     echo "Example:"
     echo "  $0 tests/fixtures/literature .dtemp 3 --newest-first"
 }
@@ -217,6 +219,14 @@ pdf_is_excluded()
 FILTERED_PDF_FILES=()
 EXCLUDED_SUBDIRECTORY_MATCH=""
 for pdf_file in "${PDF_FILES[@]}"; do
+    pdf_name="${pdf_file##*/}"
+    pdf_stem="${pdf_name%.*}"
+    case "${pdf_stem,,}" in
+        *_sup|*_supplementary|*_appendix)
+            log "Skipping supplementary PDF: ${pdf_name}"
+            continue
+            ;;
+    esac
     if pdf_is_excluded "${pdf_file}"; then
         log "Skipping excluded subdirectory PDF: $(basename "${pdf_file}") (${EXCLUDED_SUBDIRECTORY_MATCH})"
         continue

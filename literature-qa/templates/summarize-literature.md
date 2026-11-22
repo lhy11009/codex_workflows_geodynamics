@@ -16,26 +16,39 @@ specify it.
 
 ## Source restrictions
 
-Use only information contained in the specified PDF.
+Use only information contained in the specified PDF and its associated supplementary files, if available.
 
 Do not use:
 
 - web searches;
 - external literature;
 - general knowledge as supporting evidence; or
-- information from other PDFs in the literature collection.
+- information from other PDFs in the literature collection, except for supplementary files identified by the rules below.
 
-If the requested information is not provided by the paper, state that it is
-not provided rather than filling the gap using outside knowledge.
+If the requested information is not provided by the paper or its supplementary files, state that it is not provided rather than filling the gap using outside knowledge.
 
 ## Workflow
 
 1. Locate the specified PDF.
 
-2. Read enough of the paper to understand its overall structure, motivation,
-   methods, results, discussion, and conclusions.
+2. **Locate associated supplementary files.**
+   - After locating the main PDF, search the same directory for PDF files with the same base filename followed by one of these suffixes:
+     - `_sup`
+     - `_supplementary`
+     - `_appendix`
+   - For example, if the main file is `paper.pdf`, look for:
+     - `paper_sup.pdf`
+     - `paper_supplementary.pdf`
+     - `paper_appendix.pdf`
+   - If one or more matching files exist, treat them as extensions of the main paper.
+   - Read and use these files alongside the main PDF when identifying methods, results, figures, and scientific claims.
+   - When citing information from supplementary files, distinguish supplementary figures, tables, and PDF page numbers from those in the main paper.
+   - If no matching files exist, proceed using only the main PDF.
+   - Do not include unrelated PDFs or files with different base filenames.
 
-3. Identify the main scientific claims and the PDF pages that support them.
+3. Read enough of the main paper and associated supplementary files to understand their overall structure, motivation, methods, results, discussion, and conclusions.
+
+4. Identify the main scientific claims and the PDF pages that support them.
 
 
 ## Output
@@ -72,17 +85,32 @@ For example:
 
    - Focus on methodological information that is relevant to the key takeaways rather than reproducing every technical detail provided in the paper.
 
-4. Summarize the figure contents. For each figure, provide one sentence describing its main content.
-
-5. Provide a forward summary.
+4. Provide a forward summary.
 
    Organize the summary in the following order:
 
    - Start with the background knowledge and previous studies. Exclusively include all the background points identified in Section 1. For each point, provide one sentence explaining why it is important for understanding the main takeaways of the paper.
 
-   - Then summarize the results of the current study, following the order in which the figures are presented. For each figure, start with the one-sentence summary provided in Section 2. Then incorporate the relevant points identified in Section 1 and explain how the figure supports or illustrates the key takeaways. If a figure is important for multiple takeaways, discuss each connection as a separate point.
+   - Then summarize the results of the current study, following the order in which the figures are presented in the main text, including figures from associated supplementary files.
 
-   - Finally, summarize the arguments and interpretations developed in the discussion. Exclusively include all the discussion points identified in Section 1. For each point, explain how it relates to the background knowledge listed earlier and how the argument is developed or supported by the results and figures of the current study.
+     - For each figure, start with a one-sentence summary of its main result. Then incorporate the relevant points identified in Section 1 and explain how the figure supports or illustrates the key takeaways. If a figure is important for multiple takeaways, discuss each connection as a separate point.
+
+     - Include supplementary figures from associated supplementary files in the forward summary. Label them using their original supplementary figure numbers (e.g., `Figure S1`, `Figure S2`).
+
+     - **Insert supplementary figures according to the order in which they are first mentioned in the main text**, rather than placing all supplementary figures at the end.
+
+     - For example, if `Figure S1` is first mentioned in the main text between the discussions of `Figure 1` and `Figure 2`, organize the forward summary as:
+       - `#### Figure 1`
+       - `#### Figure S1`
+       - `#### Figure 2`
+
+     - If multiple supplementary figures are mentioned between two main figures, preserve their order of first mention in the main text.
+
+     - If a supplementary figure is not mentioned in the main text, place it after all figures referenced in the main text, maintaining its original supplementary figure numbering.
+
+     - Use information from the supplementary files to explain the supplementary figures, but maintain the scientific narrative established by the main paper.
+
+   - Finally, summarize the arguments and interpretations developed in the discussion. Exclusively include all the discussion points identified in Section 1. For each point, explain how it relates to the background knowledge listed earlier and how the argument is developed or supported by the results and figures of the current study, including supplementary figures where relevant.
 
 ## Output format requirements
 
@@ -135,16 +163,6 @@ Below is the specified structure:
 
 - **Setup:** <...>
 - **Purpose:** <...>
-
-## Figure summaries
-
-### Figure 1
-
-**Summary:** <one-sentence description of the figure>
-
-### Figure 2
-
-**Summary:** <one-sentence description of the figure>
 
 ## Forward summary
 
